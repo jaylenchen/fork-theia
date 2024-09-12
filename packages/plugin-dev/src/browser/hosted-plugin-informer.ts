@@ -31,6 +31,8 @@ import { WindowTitleService } from '@theia/core/lib/browser/window/window-title-
 @injectable()
 export class HostedPluginInformer implements FrontendApplicationContribution {
 
+    static file = "packages/plugin-dev/src/browser/hosted-plugin-informer.ts"
+
     public static readonly DEVELOPMENT_HOST_TITLE = nls.localize('theia/plugin-dev/devHost', 'Development Host');
 
     public static readonly DEVELOPMENT_HOST = 'development-host';

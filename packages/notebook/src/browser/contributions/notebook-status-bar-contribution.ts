@@ -27,6 +27,8 @@ export const NOTEBOOK_CELL_SELECTION_STATUS_BAR_ID = 'notebook-cell-selection-po
 @injectable()
 export class NotebookStatusBarContribution implements FrontendApplicationContribution {
 
+    static file = "packages/notebook/src/browser/contributions/notebook-status-bar-contribution.ts"
+
     @inject(StatusBar) protected readonly statusBar: StatusBar;
     @inject(NotebookEditorWidgetService) protected readonly editorWidgetService: NotebookEditorWidgetService;
 

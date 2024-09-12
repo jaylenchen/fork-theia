@@ -304,6 +304,8 @@ export class VSXExtension implements VSXExtensionData, TreeElement {
     }
 
     async install(options?: PluginDeployOptions): Promise<void> {
+        console.log(`\x1b[1;3;30;44m%s\x1b[0m`, " 在浏览器上点击插件市场的插件下载按钮 ", ` /Users/work/Third-Projects/theia/packages/vsx-registry/src/browser/vsx-extension.tsx:307 `)
+
         if (!this.verified) {
             const choice = await new ConfirmDialog({
                 title: nls.localize('theia/vsx-registry/confirmDialogTitle', 'Are you sure you want to proceed with the installation ?'),
@@ -335,8 +337,26 @@ export class VSXExtension implements VSXExtensionData, TreeElement {
     protected async doInstall(options?: PluginDeployOptions): Promise<void> {
         this._busy++;
         try {
-            await this.progressService.withProgress(nls.localizeByDefault("Installing extension '{0}' v{1}...", this.id, this.version ?? 0), 'extensions', () =>
-                this.pluginServer.deploy(this.uri.toString(), undefined, options)
+            await this.progressService.withProgress(nls.localizeByDefault("Installing extension '{0}' v{1}...", this.id, this.version ?? 0), 'extensions', async () => {
+
+
+                console.log(`\x1b[1;3;30;44m%s\x1b[0m`, ` 在浏览器上调用可以使用PluginServer接口API的rpc proxy实例发送rpc请求给后端服务部署对应URI为 ${this.uri.toString()} 的插件 `)
+                /**
+                 * 参见文件 [plugin-ext-frontend-module模块](/Users/work/Third-Projects/theia/packages/plugin-ext/src/main/browser/plugin-ext-frontend-module.ts)第148行
+                 * 在这里绑定了rpcProxy的实现，命名为PluginServer
+                 * ```typescript
+                 * bind(PluginServer).toDynamicValue(ctx => {
+                 *    const provider = ctx.container.get(WebSocketConnectionProvider);
+                 *    return provider.createProxy<PluginServer>(pluginServerJsonRpcPath);
+                 * }).inSingletonScope();
+                 * ```
+                 * 
+                 * 前端部分利用rpcProxy来远程操纵后端的PluginServer实例
+                 */
+                const result = await this.pluginServer.deploy(this.uri.toString(), undefined, options)
+
+                return result
+            }
             );
         } finally {
             this._busy--;

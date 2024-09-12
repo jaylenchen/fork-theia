@@ -63,6 +63,8 @@ export const FILE_WORKSPACE = [...CommonMenus.FILE, '2_workspace'];
 @injectable()
 export class WorkspaceFrontendContribution implements CommandContribution, KeybindingContribution, MenuContribution, FrontendApplicationContribution {
 
+    static file = "packages/workspace/src/browser/workspace-frontend-contribution.ts"
+
     @inject(MessageService) protected readonly messageService: MessageService;
     @inject(FileService) protected readonly fileService: FileService;
     @inject(OpenerService) protected readonly openerService: OpenerService;

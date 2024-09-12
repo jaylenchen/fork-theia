@@ -28,6 +28,8 @@ import { loadManifest } from './plugin-manifest-loader';
 @injectable()
 export class HostedPluginReader implements BackendApplicationContribution {
 
+    static file = "/Users/work/Third-Projects/theia/packages/plugin-ext/src/hosted/node/plugin-reader.ts"
+
     @inject(ILogger)
     protected readonly logger: ILogger;
 
@@ -94,7 +96,10 @@ export class HostedPluginReader implements BackendApplicationContribution {
         if (!pluginPath) {
             return undefined;
         }
+
+        //  获取绝对的磁盘路径：比如/Users/work/.theia/deployedPlugins/christian-kohler.npm-intellisense-1.4.5/extension目录
         const resolvedPluginPath = await realpath(pluginPath);
+        // 读取这个插件所在npm包的package.json的信息并添加一些新的信息
         const manifest = await loadManifest(resolvedPluginPath);
         if (!manifest) {
             return undefined;

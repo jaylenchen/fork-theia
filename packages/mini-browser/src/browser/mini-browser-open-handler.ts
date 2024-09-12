@@ -70,6 +70,8 @@ export interface MiniBrowserOpenerOptions extends WidgetOpenerOptions, MiniBrows
 export class MiniBrowserOpenHandler extends NavigatableWidgetOpenHandler<MiniBrowser>
     implements FrontendApplicationContribution, CommandContribution, MenuContribution, TabBarToolbarContribution {
 
+    static file = "packages/mini-browser/src/browser/mini-browser-open-handler.ts"
+    
     static PREVIEW_URI = new URI().withScheme('__minibrowser__preview__');
 
     /**

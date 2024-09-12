@@ -49,6 +49,9 @@ export class DebugFrontendContribution extends AbstractViewContribution<MemoryLa
     implements FrontendApplicationContribution,
     TabBarToolbarContribution,
     ColorContribution {
+
+    static file = "packages/memory-inspector/src/browser/memory-inspector-frontend-contribution.ts"
+
     @inject(DebugFrontendApplicationContribution) protected readonly debugContribution: DebugFrontendApplicationContribution;
     @inject(MemoryWidgetManager) protected readonly memoryWidgetManager: MemoryWidgetManager;
     @inject(FrontendApplicationStateService) protected readonly stateService: FrontendApplicationStateService;

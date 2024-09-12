@@ -31,6 +31,8 @@ import { BackendRemoteService } from '@theia/core/lib/node/remote/backend-remote
 @injectable()
 export class PluginApiContribution implements BackendApplicationContribution, WsRequestValidatorContribution {
 
+    static file = "/Users/work/Third-Projects/theia/packages/plugin-ext/src/main/node/plugin-service.ts"
+    
     protected webviewExternalEndpointRegExp: RegExp;
 
     protected serveSameOrigin: boolean = false;
@@ -44,7 +46,7 @@ export class PluginApiContribution implements BackendApplicationContribution, Ws
     @postConstruct()
     protected init(): void {
         const webviewExternalEndpoint = this.webviewExternalEndpoint();
-        console.log(`Configuring to accept webviews on '${webviewExternalEndpoint}' hostname.`);
+        // console.log(`Configuring to accept webviews on '${webviewExternalEndpoint}' hostname.`);
         this.webviewExternalEndpointRegExp = new RegExp(webviewExternalEndpoint, 'i');
     }
 

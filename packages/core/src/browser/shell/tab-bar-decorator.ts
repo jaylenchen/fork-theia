@@ -49,6 +49,8 @@ export interface TabBarDecorator {
 @injectable()
 export class TabBarDecoratorService implements FrontendApplicationContribution {
 
+    static file = "packages/core/src/browser/shell/tab-bar-decorator.ts"
+
     protected readonly onDidChangeDecorationsEmitter = new Emitter<void>();
 
     readonly onDidChangeDecorations = this.onDidChangeDecorationsEmitter.event;

@@ -26,6 +26,8 @@ import { LocalizationProvider } from './localization-provider';
 @injectable()
 export class LocalizationServerImpl implements LocalizationServer, BackendApplicationContribution {
 
+    static file = "/Users/work/Third-Projects/theia/packages/core/src/node/i18n/localization-server.ts"
+
     protected readonly initialized = new Deferred<void>();
 
     @inject(LocalizationRegistry)

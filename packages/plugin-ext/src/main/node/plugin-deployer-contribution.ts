@@ -22,6 +22,8 @@ import { ILogger } from '@theia/core';
 @injectable()
 export class PluginDeployerContribution implements BackendApplicationContribution {
 
+    static file = "/Users/work/Third-Projects/theia/packages/plugin-ext/src/main/node/plugin-deployer-contribution.ts"
+
     @inject(ILogger)
     protected readonly logger: ILogger;
 
@@ -29,6 +31,9 @@ export class PluginDeployerContribution implements BackendApplicationContributio
     protected pluginDeployer: PluginDeployer;
 
     initialize(): Promise<void> {
+        console.log(`\x1b[1;4;35m%s\x1b[0m`, `\n###[调用BackendApplicaton8个实现了initialize方法的Contribution的initialize方法进行初始化 ]\n###[初始化BackendApplication Contribution] PluginDeployerContribution `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/main/node/plugin-deployer-contribution.ts:34]`);
+
+        // 这里注入的是packages/plugin-ext/src/main/node/plugin-deployer-impl.ts
         this.pluginDeployer.start().catch(error => this.logger.error('Initializing plugin deployer failed.', error));
         return Promise.resolve();
     }

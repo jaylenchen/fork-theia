@@ -138,6 +138,8 @@ export const TEST_VIEW_CONTAINER_TITLE_OPTIONS: ViewContainerTitleOptions = {
 export class TestViewContribution extends AbstractViewContribution<TestTreeWidget> implements
     FrontendApplicationContribution, TabBarToolbarContribution {
 
+    static file = "packages/test/src/browser/view/test-view-contribution.ts"
+
     @inject(TestService) protected readonly testService: TestService;
     @inject(ContextKeyService) protected readonly contextKeys: ContextKeyService;
     @inject(NavigationLocationService) navigationService: NavigationLocationService;

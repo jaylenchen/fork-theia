@@ -21,6 +21,9 @@ import { PreferenceService, PreferenceScope } from '@theia/core/lib/browser/pref
 
 @injectable()
 export class PreferenceFrontendContribution implements FrontendApplicationContribution {
+
+    static file = "packages/preferences/src/browser/preference-frontend-contribution.ts"
+
     @inject(CliPreferences)
     protected readonly CliPreferences: CliPreferences;
 

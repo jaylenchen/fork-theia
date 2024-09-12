@@ -32,6 +32,8 @@ import { isHighContrast } from '@theia/core/lib/common/theme';
 @injectable()
 export class NotificationsContribution implements FrontendApplicationContribution, CommandContribution, KeybindingContribution, ColorContribution, StylingParticipant {
 
+    static file = "packages/messages/src/browser/notifications-contribution.ts"
+
     protected readonly id = 'theia-notification-center';
 
     @inject(NotificationManager)

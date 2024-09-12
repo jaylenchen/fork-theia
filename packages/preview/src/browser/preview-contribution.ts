@@ -55,6 +55,8 @@ export interface PreviewOpenerOptions extends WidgetOpenerOptions {
 // eslint-disable-next-line max-len
 export class PreviewContribution extends NavigatableWidgetOpenHandler<PreviewWidget> implements CommandContribution, MenuContribution, FrontendApplicationContribution, TabBarToolbarContribution {
 
+    static file = "packages/preview/src/browser/preview-contribution.ts"
+
     readonly id = PreviewUri.id;
     readonly label = nls.localize(MiniBrowserCommands.PREVIEW_CATEGORY_KEY, MiniBrowserCommands.PREVIEW_CATEGORY);
 

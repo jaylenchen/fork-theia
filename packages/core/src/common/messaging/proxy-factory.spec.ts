@@ -54,6 +54,10 @@ describe('Proxy-Factory', () => {
                 setTimeout(check, 50);
             } else {
                 expect(it.client.notifications[0]).eq('hello');
+                // serverProxy.doStuff('foo')是这么执行的：
+                // 在客户端使用serverProxy.doStuff执行的时候，由于serverProxy是一个代理对象，所以会调用代理对象的get方法，get方法会返回一个函数，
+                // 这个函数会调用connection.sendRequest方法，connection.sendRequest方法会发送一个请求给server，server会接收到这个请求，
+                // 然后在server那头会调用doStuff方法。
                 it.serverProxy.doStuff('foo').then(result => {
                     expect(result).to.be.eq('done: foo');
                     done();

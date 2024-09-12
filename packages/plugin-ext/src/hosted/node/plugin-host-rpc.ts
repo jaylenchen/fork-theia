@@ -19,7 +19,8 @@
 import { dynamicRequire, removeFromCache } from '@theia/core/lib/node/dynamic-require';
 import { ContainerModule, inject, injectable, postConstruct, unmanaged } from '@theia/core/shared/inversify';
 import { AbstractPluginManagerExtImpl, PluginHost, PluginManagerExtImpl } from '../../plugin/plugin-manager';
-import { MAIN_RPC_CONTEXT, Plugin, PluginAPIFactory, PluginManager,
+import {
+    MAIN_RPC_CONTEXT, Plugin, PluginAPIFactory, PluginManager,
     LocalizationExt
 } from '../../common/plugin-api-rpc';
 import { PluginMetadata, PluginModel } from '../../common/plugin-protocol';
@@ -107,7 +108,30 @@ export abstract class AbstractPluginHostRPC<PM extends AbstractPluginManagerExtI
 
     @postConstruct()
     initialize(): void {
-        this.pluginManager.setPluginHost(this.createPluginHost());
+        console.log(`\x1b[1;3;30;43m%s\x1b[0m`, `\n ==========>==========>==========>触发AbstractPluginHostRPC初始化initialize方法创建plugin host `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/hosted/node/plugin-host-rpc.ts:111]`);
+
+        /**
+         * plugin host长这样：
+         * 
+         * { 
+         *    loadPlugin: [Function: loadPlugin],
+         *    init: [AsyncFunction: init],
+         *    initExtApi: [Function: initExtApi],
+         *   loadTests: [AsyncFunction: loadTests]
+         * }
+         */
+        console.log(`\x1b[1;3;30;43m%s\x1b[0m`, `\n ==========>==========>==========>往pluginManager身上设置plugin host `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/hosted/node/plugin-host-rpc.ts:123]`,
+            `\n一个plugin host长这样：
+            \n{
+            \n   loadPlugin: [Function: loadPlugin],
+            \n   init: [AsyncFunction: init],
+            \n   initExtApi: [Function: initExtApi],
+            \n   loadTests: [AsyncFunction: loadTests]
+            \n}
+            \n`);
+
+        const pluginHost = this.createPluginHost();
+        this.pluginManager.setPluginHost(pluginHost);
 
         const extInterfaces = this.createExtInterfaces();
         this.registerExtInterfaces(extInterfaces);
@@ -139,8 +163,8 @@ export abstract class AbstractPluginHostRPC<PM extends AbstractPluginManagerExtI
     }
 
     initContext(contextPath: string, plugin: Plugin): void {
-        const { name, version } = plugin.rawModel;
-        console.debug(this.banner, 'initializing(' + name + '@' + version + ' with ' + contextPath + ')');
+        // const { name, version } = plugin.rawModel;
+        // console.debug(this.banner, 'initializing(' + name + '@' + version + ' with ' + contextPath + ')');
         try {
             type BackendInitFn = (pluginApiFactory: PAF, plugin: Plugin) => void;
             const backendInit = dynamicRequire<{ doInitialization: BackendInitFn }>(contextPath);
@@ -163,18 +187,20 @@ export abstract class AbstractPluginHostRPC<PM extends AbstractPluginManagerExtI
         const self = this;
         return {
             loadPlugin(plugin: Plugin): any {
-                console.debug(self.banner, 'PluginManagerExtImpl/loadPlugin(' + plugin.pluginPath + ')');
+                // console.debug(self.banner, 'PluginManagerExtImpl/loadPlugin(' + plugin.pluginPath + ')');
                 // cleaning the cache for all files of that plug-in.
                 // this prevents a memory leak on plugin host restart. See for reference:
                 // https://github.com/eclipse-theia/theia/pull/4931
                 // https://github.com/nodejs/node/issues/8443
                 removeFromCache(mod => mod.id.startsWith(plugin.pluginFolder));
                 if (plugin.pluginPath) {
+                    console.log(`\x1b[1;3;30;44m%s\x1b[0m`, `\n 正式调用dynamicRequire(plugin.pluginPath)加载已部署的插件 `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/hosted/node/plugin-host-rpc.ts:174]`);
+
                     return dynamicRequire(plugin.pluginPath);
                 }
             },
             async init(raw: PluginMetadata[]): Promise<[Plugin[], Plugin[]]> {
-                console.log(self.banner, 'PluginManagerExtImpl/init()');
+                // console.log(self.banner, 'PluginManagerExtImpl/init()');
                 const result: Plugin[] = [];
                 const foreign: Plugin[] = [];
                 for (const plg of raw) {
@@ -216,8 +242,8 @@ export abstract class AbstractPluginHostRPC<PM extends AbstractPluginManagerExtI
                             if (backendInitPath) {
                                 self.initContext(backendInitPath, plugin);
                             } else {
-                                const { name, version } = plugin.rawModel;
-                                console.debug(self.banner, 'initializing(' + name + '@' + version + ' without any default API)');
+                                // const { name, version } = plugin.rawModel;
+                                // console.debug(self.banner, 'initializing(' + name + '@' + version + ' without any default API)');
                             }
                             result.push(plugin);
                         }
@@ -273,7 +299,7 @@ export abstract class AbstractPluginHostRPC<PM extends AbstractPluginManagerExtI
      * @param extApi the extension API to initialize, if appropriate
      * @throws if any error occurs in initializing the extension API
      */
-     protected abstract initExtApi(extApi: ExtPluginApi): void;
+    protected abstract initExtApi(extApi: ExtPluginApi): void;
 }
 
 /**

@@ -52,6 +52,8 @@ export namespace OutlineViewCommands {
 @injectable()
 export class OutlineViewContribution extends AbstractViewContribution<OutlineViewWidget> implements FrontendApplicationContribution, TabBarToolbarContribution {
 
+    static file = "packages/outline-view/src/browser/outline-view-contribution.ts"
+   
     constructor() {
         super({
             widgetId: OUTLINE_WIDGET_FACTORY_ID,

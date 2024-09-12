@@ -24,6 +24,7 @@ import { Process } from './process';
 @injectable()
 export class ProcessManager implements ManagedProcessManager, BackendApplicationContribution {
 
+    static file = "/Users/work/Third-Projects/theia/packages/process/src/node/process-manager.ts"
     protected readonly processes: Map<number, Process>;
     protected readonly deleteEmitter: Emitter<number>;
 

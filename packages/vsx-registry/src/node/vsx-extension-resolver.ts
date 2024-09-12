@@ -46,7 +46,10 @@ export class VSXExtensionResolver implements PluginDeployerResolver {
     static readonly TARGET_PLATFORM = `${process.platform}-${process.arch}` as VSXTargetPlatform;
 
     async resolve(context: PluginDeployerResolverContext, options?: PluginDeployOptions): Promise<void> {
-        const id = VSCodeExtensionUri.toId(new URI(context.getOriginId()));
+        const oid = context.getOriginId();
+        console.log(`\x1b[38;5;214m ###############🚀 ~ 正在调用VSXExtensionResolver解析器 解析插件 ${oid}...[/Users/work/Third-Projects/theia/packages/vsx-registry/src/node/vsx-extension-resolver.ts:50]\x1b[0m`);
+
+        const id = VSCodeExtensionUri.toId(new URI(oid));
         if (!id) {
             return;
         }
@@ -90,11 +93,15 @@ export class VSXExtensionResolver implements PluginDeployerResolver {
         await fs.ensureDir(downloadDir);
         const downloadedExtensionPath = path.resolve(downloadDir, path.basename(downloadUrl));
         console.log(`[${resolvedId}]: trying to download from "${downloadUrl}"...`, 'to path', downloadDir);
+        console.log(`\x1b[38;5;214m ###############🚀 ~ 开始调用VSXExtensionResolver 从 ${downloadUrl} 下载插件 ${resolvedId} 并放到 ${downloadDir}中...[/Users/work/Third-Projects/theia/packages/vsx-registry/src/node/vsx-extension-resolver.ts:96]\x1b[0m`);
+
         if (!await this.download(downloadUrl, downloadedExtensionPath)) {
-            console.log(`[${resolvedId}]: not found`);
+            // console.log(`[${resolvedId}]: not found`);
             return;
         }
         console.log(`[${resolvedId}]: downloaded to ${downloadedExtensionPath}"`);
+        console.log(`\x1b[38;5;214m ###############🚀 ~ 插件 ${resolvedId} 成功下载到 ${downloadDir}中...[/Users/work/Third-Projects/theia/packages/vsx-registry/src/node/vsx-extension-resolver.ts:103]\x1b[0m`);
+
         context.addPlugin(resolvedId, downloadedExtensionPath);
     }
 

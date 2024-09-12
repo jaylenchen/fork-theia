@@ -28,6 +28,8 @@ import { MiniBrowserEndpoint } from '../../common/mini-browser-endpoint';
 @injectable()
 export class MiniBrowserEnvironment implements FrontendApplicationContribution {
 
+    static file = "packages/mini-browser/src/browser/environment/mini-browser-environment.ts"
+
     protected _hostPatternPromise: Promise<string>;
     protected _hostPattern?: string;
 

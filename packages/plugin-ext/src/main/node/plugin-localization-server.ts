@@ -22,11 +22,14 @@ import { LocalizationServerImpl } from '@theia/core/lib/node/i18n/localization-s
 
 @injectable()
 export class PluginLocalizationServer extends LocalizationServerImpl {
+    static override  file = "/Users/work/Third-Projects/theia/packages/plugin-ext/src/main/node/plugin-localization-server.ts"
+
     @inject(PluginDeployer)
     protected readonly pluginDeployer: PluginDeployerImpl;
     protected readonly pluginsDeployed = new Deferred();
 
     override async initialize(): Promise<void> {
+        console.log(`\x1b[1;4;35m%s\x1b[0m`, `\n###[调用BackendApplicaton8个实现了initialize方法的Contribution的initialize方法进行初始化 ]\n###[初始化BackendApplication Contribution] PluginLocalizationServer `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/main/node/plugin-localization-server.ts:32]`);
         this.pluginDeployer.onDidDeploy(() => {
             this.pluginsDeployed.resolve();
         });

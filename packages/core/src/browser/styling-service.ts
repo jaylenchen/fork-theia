@@ -41,6 +41,9 @@ export interface CssStyleCollector {
 
 @injectable()
 export class StylingService implements FrontendApplicationContribution {
+
+    static file = "packages/core/src/browser/styling-service.ts"
+
     protected cssElements = new Map<Window, HTMLStyleElement>();
 
     @inject(ThemeService)

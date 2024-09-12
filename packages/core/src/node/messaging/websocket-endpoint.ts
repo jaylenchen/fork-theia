@@ -25,6 +25,8 @@ import { BackendApplicationContribution } from '../backend-application';
 
 @injectable()
 export class WebsocketEndpoint implements BackendApplicationContribution {
+    static file = "/Users/work/Third-Projects/theia/packages/core/src/node/messaging/websocket-endpoint.ts"
+
     @inject(WsRequestValidator)
     protected readonly wsRequestValidator: WsRequestValidator;
 
@@ -41,6 +43,8 @@ export class WebsocketEndpoint implements BackendApplicationContribution {
     }
 
     onStart(server: http.Server | https.Server): void {
+        console.log(`\x1b[1;4;35m%s\x1b[0m`, `\n###[启动BackendApplication Contribution] WebsocketEndpoint `, ` [/Users/work/Third-Projects/theia/packages/core/src/node/messaging/websocket-endpoint.ts:46]`, `\n WebsocketEndpoint onStart主要在服务器上设置 WebSocket 端点，并处理每个连接请求。通过这种方式，服务器能够接受和管理 WebSocket 连接，实现实时通信功能。\n`);
+
         const socketServer = new Server(server, {
             pingInterval: this.checkAliveTimeout,
             pingTimeout: this.checkAliveTimeout * 2,

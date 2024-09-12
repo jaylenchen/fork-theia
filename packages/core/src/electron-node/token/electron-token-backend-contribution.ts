@@ -26,6 +26,8 @@ import { ElectronTokenValidator } from './electron-token-validator';
 @injectable()
 export class ElectronTokenBackendContribution implements BackendApplicationContribution {
 
+    static file = "/Users/work/Third-Projects/theia/packages/core/src/electron-node/token/electron-token-backend-contribution.ts"
+
     @inject(ElectronTokenValidator)
     protected readonly tokenValidator: ElectronTokenValidator;
 

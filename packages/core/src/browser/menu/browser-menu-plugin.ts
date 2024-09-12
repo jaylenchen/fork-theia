@@ -369,6 +369,8 @@ export class DynamicMenuWidget extends MenuWidget {
 @injectable()
 export class BrowserMenuBarContribution implements FrontendApplicationContribution {
 
+    static file = "packages/core/src/browser/menu/browser-menu-plugin.ts"
+
     @inject(ApplicationShell)
     protected readonly shell: ApplicationShell;
 

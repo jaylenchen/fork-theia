@@ -51,6 +51,8 @@ export namespace VSXCommands {
 @injectable()
 export class VSXExtensionsContribution extends AbstractViewContribution<VSXExtensionsViewContainer> implements ColorContribution, FrontendApplicationContribution {
 
+    static file = "packages/vsx-registry/src/browser/vsx-extensions-contribution.ts"
+
     @inject(VSXExtensionsModel) protected model: VSXExtensionsModel;
     @inject(CommandRegistry) protected commandRegistry: CommandRegistry;
     @inject(FileDialogService) protected fileDialogService: FileDialogService;

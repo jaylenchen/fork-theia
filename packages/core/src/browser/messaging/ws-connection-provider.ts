@@ -44,6 +44,8 @@ export class WebSocketConnectionProvider {
 
     createProxy<T extends object>(path: string, target?: object): RpcProxy<T>;
     createProxy<T extends object>(path: string, factory: RpcProxyFactory<T>): RpcProxy<T> {
+        console.log(`\x1b[1;3;30;42m%s\x1b[0m`, `\n==========>==========>==========>在浏览器上针对 "${path}" 创建RPC Proxy [调用WebSocketConnectionProvider createProxy]`, `[/Users/work/Third-Projects/theia/packages/core/src/browser/messaging/ws-connection-provider.ts:47]`);
+
         return this.remoteConnectionProvider.createProxy(path, factory);
     }
 }

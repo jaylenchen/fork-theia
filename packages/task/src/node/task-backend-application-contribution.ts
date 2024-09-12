@@ -22,6 +22,8 @@ import { TaskRunnerContribution, TaskRunnerRegistry } from './task-runner';
 @injectable()
 export class TaskBackendApplicationContribution implements BackendApplicationContribution {
 
+    static file = "/Users/work/Third-Projects/theia/packages/task/src/node/task-backend-application-contribution.ts"
+
     @inject(ContributionProvider) @named(TaskRunnerContribution)
     protected readonly contributionProvider: ContributionProvider<TaskRunnerContribution>;
 
@@ -29,7 +31,17 @@ export class TaskBackendApplicationContribution implements BackendApplicationCon
     protected readonly taskRunnerRegistry: TaskRunnerRegistry;
 
     onStart(): void {
-        this.contributionProvider.getContributions().forEach(contrib =>
+        console.log(`\x1b[1;4;35m%s\x1b[0m`, `\n###[调用BackendApplication Contribution onStart启动] TaskBackendApplicationContribution `, ` [/Users/work/Third-Projects/theia/packages/task/src/node/task-backend-application-contribution.ts:34]`);
+        const contributions = this.contributionProvider.getContributions()
+
+        console.log(`\x1b[1;3;30;43m%s\x1b[0m`, `\n TaskRunnerContribution有${contributions.length}个 `, ` [/Users/work/Third-Projects/theia/packages/task/src/node/task-backend-application-contribution.ts:37]\n`);
+        console.table(contributions.map(c => {
+            return {
+                "registerRunner name": c.registerRunner.name
+            }
+        }))
+
+        contributions.forEach(contrib =>
             contrib.registerRunner(this.taskRunnerRegistry)
         );
     }

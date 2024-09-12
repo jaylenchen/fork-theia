@@ -24,6 +24,8 @@ import * as monaco from '@theia/monaco-editor-core';
 @injectable()
 export class MonacoStatusBarContribution implements FrontendApplicationContribution {
 
+    static file = "packages/monaco/src/browser/monaco-status-bar-contribution.ts"
+
     protected readonly toDispose = new DisposableCollection();
 
     constructor(

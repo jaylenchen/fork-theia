@@ -20,7 +20,7 @@ import { ProcessTerminatedMessage, ProcessTerminateMessage } from './hosted-plug
 import { PluginHostRPC } from './plugin-host-rpc';
 import pluginHostModule from './plugin-host-module';
 
-console.log('PLUGIN_HOST(' + process.pid + ') starting instance');
+console.log(`\x1b[1;3;30;43m%s\x1b[0m`, `==========>==========>==========>PLUGIN_HOST ${process.pid} starting instance `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/hosted/node/plugin-host.ts:24]`, `\n\n`);
 
 // override exit() function, to do not allow plugin kill this node
 process.exit = function (code?: number): void {
@@ -76,10 +76,17 @@ process.on('rejectionHandled', (promise: Promise<any>) => {
 
 let terminating = false;
 
+
 const container = new Container();
+
+console.log(`\x1b[1;3;30;43m%s\x1b[0m`, `\n ==========>==========>==========>创建一个新的ioc container，然后load pluginHostModule `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/hosted/node/plugin-host.ts:82]`);
+
 container.load(pluginHostModule);
 
 const rpc: RPCProtocol = container.get(RPCProtocol);
+
+console.log(`\x1b[1;3;30;43m%s\x1b[0m`, `\n ==========>==========>==========>使用ioc container创建并获取PluginHostRPC `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/hosted/node/plugin-host.ts:88]`);
+
 const pluginHostRPC = container.get(PluginHostRPC);
 
 process.on('message', async (message: string) => {

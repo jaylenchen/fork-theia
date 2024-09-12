@@ -304,6 +304,7 @@ export class PluginContributionHandler {
                 }
             }
         }
+        
         if (contributions.views) {
             // eslint-disable-next-line guard-for-in
             for (const location in contributions.views) {
@@ -652,7 +653,7 @@ export class PluginContributionHandler {
             const langId = languages[scope];
             result[scope] = getEncodedLanguageId(langId);
             if (!result[scope]) {
-                logWarning(`Language for '${scope}' not found.`);
+                // logWarning(`Language for '${scope}' not found.`);
             }
         }
         return result;

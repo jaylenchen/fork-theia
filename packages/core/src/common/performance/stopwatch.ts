@@ -90,15 +90,15 @@ export abstract class Stopwatch {
      * @see {@link MeasurementOptions.thresholdMillis}
      */
     public async startAsync<T>(name: string, description: string, computation: () => MaybePromise<T>, options?: MeasurementOptions): Promise<T> {
-        const threshold = options?.thresholdMillis ?? Number.POSITIVE_INFINITY;
+        // const threshold = options?.thresholdMillis ?? Number.POSITIVE_INFINITY;
 
-        const measure = this.start(name, options);
+        // const measure = this.start(name, options);
         const result = await computation();
-        if (measure.stop() > threshold) {
-            measure.warn(`${description} took longer than the expected maximum ${threshold} milliseconds`);
-        } else {
-            measure.log(description);
-        }
+        // if (measure.stop() > threshold) {
+        //     // measure.warn(`${description} took longer than the expected maximum ${threshold} milliseconds`);
+        // } else {
+        //     // measure.log(description);
+        // }
         return result;
     }
 

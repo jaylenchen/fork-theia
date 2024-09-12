@@ -378,6 +378,8 @@ export const CLASSNAME_OS_LINUX = 'linux';
 @injectable()
 export class CommonFrontendContribution implements FrontendApplicationContribution, MenuContribution, CommandContribution, KeybindingContribution, ColorContribution {
 
+    static file = "packages/core/src/browser/common-frontend-contribution.ts"
+
     protected commonDecorationsStyleSheet: CSSStyleSheet = DecorationStyle.createStyleSheet('coreCommonDecorationsStyle');
 
     constructor(

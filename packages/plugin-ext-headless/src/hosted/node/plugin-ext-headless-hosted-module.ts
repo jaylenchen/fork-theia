@@ -52,25 +52,34 @@ export function bindHeadlessHosted(bind: interfaces.Bind): void {
     bind(PluginScanner).toService(TheiaHeadlessPluginScanner);
     bind(SupportedHeadlessActivationEvents).toConstantValue(['*', 'onStartupFinished']);
 
-    bind(BackendApplicationContribution).toDynamicValue(({container}) => {
+    bind(BackendApplicationContribution).toDynamicValue(({ container }) => {
         let hostedPluginSupport: HeadlessHostedPluginSupport | undefined;
 
-        return {
+        class MyHeadlessHostedPluginSupport {
+            static file = "/Users/work/Third-Projects/theia/packages/plugin-ext-headless/src/hosted/node/plugin-ext-headless-hosted-module.ts"
+
             onStart(): MaybePromise<void> {
+                console.log(`\x1b[1;4;35m%s\x1b[0m`, `\n###[调用BackendApplication Contribution onStart启动] MyHeadlessHostedPluginSupport启动 `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext-headless/src/hosted/node/plugin-ext-headless-hosted-module.ts:62]`);
+
                 // Create a child container to isolate the Headless Plugin hosting stack
                 // from all connection-scoped frontend/backend plugin hosts and
                 // also to avoid leaking it into the global container scope
                 const headlessPluginsContainer = container.createChild();
                 const modules = container.getAll<ContainerModule>(HeadlessPluginContainerModule);
+
                 headlessPluginsContainer.load(...modules);
 
                 hostedPluginSupport = headlessPluginsContainer.get(HeadlessHostedPluginSupport);
+
+                console.log("\x1b[38;5;214m ###############🚀 ~ 启动 hostedPluginSupport...[/Users/work/Third-Projects/theia/packages/plugin-ext-headless/src/hosted/node/plugin-ext-headless-hosted-module.ts:70]\x1b[0m");
+                // plugin-ext-headless依赖于plugin-ext包的packages/plugin-ext/src/hosted/common/hosted-plugin.ts
                 hostedPluginSupport.onStart(headlessPluginsContainer);
-            },
+            }
 
             onStop(): void {
                 hostedPluginSupport?.shutDown();
             }
-        };
+        }
+        return new MyHeadlessHostedPluginSupport()
     });
 }

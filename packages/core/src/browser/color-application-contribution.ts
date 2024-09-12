@@ -32,6 +32,8 @@ export interface ColorContribution {
 @injectable()
 export class ColorApplicationContribution implements FrontendApplicationContribution {
 
+    static file = "packages/core/src/browser/color-application-contribution.ts"
+
     protected readonly onDidChangeEmitter = new Emitter<void>();
     readonly onDidChange = this.onDidChangeEmitter.event;
     private readonly windows: Set<Window> = new Set();

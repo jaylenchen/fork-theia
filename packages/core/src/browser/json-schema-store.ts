@@ -37,6 +37,8 @@ export interface JsonSchemaContribution {
 @injectable()
 export class JsonSchemaStore implements FrontendApplicationContribution {
 
+    static file = "packages/core/src/browser/json-schema-store.ts"
+
     @inject(ContributionProvider) @named(JsonSchemaContribution)
     protected readonly contributions: ContributionProvider<JsonSchemaContribution>;
 

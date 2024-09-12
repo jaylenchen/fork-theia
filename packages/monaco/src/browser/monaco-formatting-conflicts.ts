@@ -31,6 +31,8 @@ const PREFERENCE_NAME = 'editor.defaultFormatter';
 @injectable()
 export class MonacoFormattingConflictsContribution implements FrontendApplicationContribution {
 
+    static file = "packages/monaco/src/browser/monaco-formatting-conflicts.ts"
+
     @inject(MonacoQuickInputService)
     protected readonly monacoQuickInputService: MonacoQuickInputService;
 

@@ -59,6 +59,9 @@ class InlineSegment {
 
 @injectable()
 export class DebugInlineValueDecorator implements FrontendApplicationContribution {
+
+    static file = "packages/debug/src/browser/editor/debug-inline-value-decorator.ts"
+
     @inject(DebugPreferences)
     protected readonly preferences: DebugPreferences;
 

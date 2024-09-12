@@ -50,6 +50,8 @@ const FileWatchingPreferencesSchema: PreferenceSchema = {
 @injectable()
 class SampleFileWatchingContribution implements FrontendApplicationContribution {
 
+    static file = "examples/api-samples/src/browser/file-watching/sample-file-watching-contribution.ts"
+
     protected verbose: boolean;
 
     @inject(FileService)

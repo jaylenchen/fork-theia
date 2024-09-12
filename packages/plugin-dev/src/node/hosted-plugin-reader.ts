@@ -24,6 +24,7 @@ import { HostedPluginDeployerHandler } from '@theia/plugin-ext/lib/hosted/node/h
 
 @injectable()
 export class HostedPluginReader implements BackendApplicationContribution {
+    static file = "/Users/work/Third-Projects/theia/packages/plugin-dev/src/node/hosted-plugin-reader.ts"
 
     @inject(PluginReaderHosted)
     protected pluginReader: PluginReaderHosted;
@@ -34,6 +35,8 @@ export class HostedPluginReader implements BackendApplicationContribution {
     protected deployerHandler: HostedPluginDeployerHandler;
 
     async initialize(): Promise<void> {
+        console.log(`\x1b[1;4;35m%s\x1b[0m`, `\n###[调用BackendApplicaton8个实现了initialize方法的Contribution的initialize方法进行初始化 ]\n###[初始化BackendApplication Contribution] HostedPluginReader `, ` [/Users/work/Third-Projects/theia/packages/plugin-dev/src/node/hosted-plugin-reader.ts:38]`, `\n HostedPluginReader initialize方法用来处理和部署托管插件。它首先尝试获取插件的元数据，然后根据元数据的内容决定是否部署插件的前端和/或后端部分。总的来说就是根据托管插件的元数据，动态地部署插件的前端和后端部分，以确保插件能够正确运行。\n`);
+
         this.pluginReader.getPluginMetadata(process.env.HOSTED_PLUGIN)
             .then(this.hostedPlugin.resolve.bind(this.hostedPlugin));
 
@@ -43,13 +46,18 @@ export class HostedPluginReader implements BackendApplicationContribution {
             hostedPlugin.storeValue('isUnderDevelopment', true);
             const hostedMetadata = await this.hostedPlugin.promise;
             if (hostedMetadata!.model.entryPoint && (hostedMetadata!.model.entryPoint.backend || hostedMetadata!.model.entryPoint.headless)) {
+                console.log("\x1b[38;5;214m🚀 ~ 部署后端插件...\x1b[0m");
+
                 this.deployerHandler.deployBackendPlugins([hostedPlugin]);
             }
 
             if (hostedMetadata!.model.entryPoint && hostedMetadata!.model.entryPoint.frontend) {
+                console.log("\x1b[38;5;214m🚀 ~ 部署前端端插件...\x1b[0m");
+
                 this.deployerHandler.deployFrontendPlugins([hostedPlugin]);
             }
         }
+
     }
 
     async getPlugin(): Promise<PluginMetadata | undefined> {

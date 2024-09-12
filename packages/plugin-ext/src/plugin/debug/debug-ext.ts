@@ -129,7 +129,7 @@ export class DebugExtImpl implements DebugExt {
                 type: contribution.type,
                 label: contribution.label || contribution.type
             });
-            console.log(`Debugger contribution has been registered: ${contribution.type}`);
+            // console.log(`Debugger contribution has been registered: ${contribution.type}`);
         });
     }
 
@@ -259,7 +259,7 @@ export class DebugExtImpl implements DebugExt {
     }
 
     registerDebugConfigurationProvider(debugType: string, provider: theia.DebugConfigurationProvider, trigger: DebugConfigurationProviderTriggerKind): Disposable {
-        console.log(`Debug configuration provider has been registered: ${debugType}, trigger: ${trigger}`);
+        // console.log(`Debug configuration provider has been registered: ${debugType}, trigger: ${trigger}`);
 
         const handle = this.configurationProviderHandleGenerator++;
         this.configurationProviders.push({ handle, type: debugType, trigger, provider });

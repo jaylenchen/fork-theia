@@ -25,6 +25,8 @@ import { CollaborationURI } from './collaboration-file-system-provider';
 @injectable()
 export class CollaborationWorkspaceService extends WorkspaceService {
 
+    static file = "packages/collaboration/src/browser/collaboration-workspace-service.ts"
+
     protected collabWorkspace?: Workspace;
     protected connection?: ProtocolBroadcastConnection;
 

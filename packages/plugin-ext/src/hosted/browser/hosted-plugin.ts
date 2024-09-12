@@ -238,7 +238,11 @@ export class HostedPluginSupport extends AbstractHostedPluginSupport<PluginManag
     }
 
     protected override runOperation(operation: () => Promise<void>): Promise<void> {
-        return this.progressService.withProgress('', PluginProgressLocation, () => this.doLoad());
+        return this.progressService.withProgress('', PluginProgressLocation, () => {
+            console.log(`\x1b[1;3;30;44m%s\x1b[0m`, `\n ==========>==========>在浏览器上调用HostedPluginSupport.doLoad方法加载插件 `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/hosted/browser/hosted-plugin.ts:242]`);
+
+            return this.doLoad()
+        });
     }
 
     protected override afterStart(): void {
@@ -272,6 +276,7 @@ export class HostedPluginSupport extends AbstractHostedPluginSupport<PluginManag
     }
 
     protected handleContributions(plugin: DeployedPlugin): Disposable {
+        // contrbutionHandler位于packages/plugin-ext/src/main/browser/plugin-contribution-handler.ts
         return this.contributionHandler.handleContributions(this.clientId, plugin);
     }
 
@@ -280,16 +285,29 @@ export class HostedPluginSupport extends AbstractHostedPluginSupport<PluginManag
     }
 
     protected async obtainManager(host: string, hostContributions: PluginContributions[], toDisconnect: DisposableCollection): Promise<PluginManagerExt | undefined> {
+        // 1. 检查是否已有 manager 实例：每个 host 都有一个独立的 manager 实例，用于管理该 host 上的插件
+        /**
+         * 在 Theia 框架中，host（插件宿主环境）主要有以下几种：
+         * 
+         * 1. 前端（Frontend）：运行在浏览器中的环境，负责处理用户界面和用户交互，主要管理与用户界面相关的插件。
+         * 2. 后端（Backend）：运行在服务器上的环境，负责处理业务逻辑和数据存储，主要管理与服务器端逻辑相关的插件。
+         * 3. 无头模式（Headless）：没有用户界面的环境，通常用于自动化任务或后台服务，主要管理不需要用户界面的插件。
+         */
         let manager = this.managers.get(host);
         if (!manager) {
             const pluginId = getPluginId(hostContributions[0].plugin.metadata.model);
+            // 2. 初始化rpc
             const rpc = this.initRpc(host, pluginId);
             toDisconnect.push(rpc);
 
+            console.log(`\x1b[1;3;30;44m%s\x1b[0m`, `\n ==========>==========>获取指定ID的rpc proxy `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/hosted/browser/hosted-plugin.ts:293]`);
+            // 3. 获取 RPC 代理对象
             manager = rpc.getProxy(MAIN_RPC_CONTEXT.HOSTED_PLUGIN_MANAGER_EXT);
+            // 设置host和manager之间的映射："main" <---> "rpc proxy(manager)"
             this.managers.set(host, manager);
             toDisconnect.push(Disposable.create(() => this.managers.delete(host)));
 
+            // 4. 获取插件相关的各种状态和配置：
             const [extApi, globalState, workspaceState, webviewResourceRoot, webviewCspSource, defaultShell, jsonValidation] = await Promise.all([
                 this.server.getExtPluginAPI(),
                 this.pluginServer.getAllStorageValues(undefined),
@@ -317,6 +335,9 @@ export class HostedPluginSupport extends AbstractHostedPluginSupport<PluginManag
                 additionalActivationEvents.value.split(',').forEach(event => supportedActivationEvents.push(event));
             }
 
+            console.log(`\x1b[1;3;30;44m%s\x1b[0m`, `\n ==========>==========>使用rpc proxy发送$init rpc方法调用 `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/hosted/browser/hosted-plugin.ts:327]`);
+
+            // 5. 初始化代理对象manager
             await manager.$init({
                 preferences: getPreferences(this.preferenceProviderProvider, this.workspaceService.tryGetRoots()),
                 globalState,
@@ -343,6 +364,8 @@ export class HostedPluginSupport extends AbstractHostedPluginSupport<PluginManag
             if (toDisconnect.disposed) {
                 return undefined;
             }
+
+            // 6. 激活事件
             this.activationEvents.forEach(event => manager!.$activateByEvent(event));
         }
         return manager;
@@ -533,7 +556,15 @@ export class HostedPluginSupport extends AbstractHostedPluginSupport<PluginManag
                 }
             }
         }
-        const activatePlugin = () => manager.$activateByEvent(`onPlugin:${plugin.metadata.model.id}`);
+
+        const activatePlugin = () => {
+            console.log(`\x1b[1;3;30;44m%s\x1b[0m`,
+                `\n [激活插件]-调用manager.$activateByEvent激活[${plugin.metadata.model.id}] \n`,
+                ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/hosted/browser/hosted-plugin.ts:543]\n`,
+            );
+
+            return manager.$activateByEvent(`onPlugin:${plugin.metadata.model.id}`)
+        };
         const promises: Promise<boolean>[] = [];
         if (paths.length) {
             promises.push(this.workspaceService.containsSome(paths));

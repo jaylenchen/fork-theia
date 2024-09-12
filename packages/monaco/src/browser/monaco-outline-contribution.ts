@@ -32,6 +32,9 @@ import { DocumentSymbol } from '@theia/monaco-editor-core/esm/vs/editor/common/l
 @injectable()
 export class MonacoOutlineContribution implements FrontendApplicationContribution {
 
+
+    static file = "packages/monaco/src/browser/monaco-outline-contribution.ts"
+
     protected readonly toDisposeOnEditor = new DisposableCollection();
     protected roots: MonacoOutlineSymbolInformationNode[] | undefined;
     protected canUpdateOutline: boolean = true;

@@ -28,6 +28,8 @@ export const MainChannel = Symbol('MainChannel');
 
 @injectable()
 export class DefaultMessagingService implements MessagingService, BackendApplicationContribution {
+    static file = "/Users/work/Third-Projects/theia/packages/core/src/node/messaging/default-messaging-service.ts"
+
     @inject(MessagingContainer)
     protected readonly container: interfaces.Container;
 
@@ -43,8 +45,24 @@ export class DefaultMessagingService implements MessagingService, BackendApplica
     protected readonly channelHandlers = new ConnectionHandlers<Channel>();
 
     initialize(): void {
+        console.log(`\x1b[1;4;35m%s\x1b[0m`, `\n###[调用BackendApplicaton8个实现了initialize方法的Contribution的initialize方法进行初始化 ]\n###[初始化BackendApplication Contribution] DefaultMessagingService `, ` [/Users/work/Third-Projects/theia/packages/core/src/node/messaging/default-messaging-service.ts:48]`);
+
         this.registerConnectionHandler(servicesPath, (_, socket) => this.handleConnection(socket));
-        for (const contribution of this.contributions.getContributions()) {
+        const contributions = this.contributions.getContributions();
+
+        // =======================debug start=======================
+        console.log(`\x1b[1;4;30;42m%s\x1b[0m`, `\n######[初始化BackendApplication Contribution]\n######[调用${contributions.length}个DefaultMessagingService Contribution的configure方法配置DefaultMessagingService] `, ` [/Users/work/Third-Projects/theia/packages/core/src/node/messaging/default-messaging-service.ts:48]`);
+        console.table(contributions.map(contribution => {
+            const Contribution = contribution.constructor as any
+            return {
+                "MessagingService Contribution": Contribution.name,
+                File: Contribution.file,
+            }
+        }))
+        // =======================debug end=======================
+
+
+        for (const contribution of contributions) {
             contribution.configure(this);
         }
     }
@@ -80,7 +98,21 @@ export class DefaultMessagingService implements MessagingService, BackendApplica
         connectionContainer.load(...this.connectionModules.getContributions());
         const connectionChannelHandlers = new ConnectionHandlers<Channel>(this.channelHandlers);
         const connectionHandlers = connectionContainer.getNamed<ContributionProvider<ConnectionHandler>>(ContributionProvider, ConnectionHandler);
-        for (const connectionHandler of connectionHandlers.getContributions(true)) {
+        const handlers = connectionHandlers.getContributions(true)
+
+        console.log(`\x1b[1;3;30;43m%s\x1b[0m`, `\n 当前有${handlers.length}个rpc handler `, ` [/Users/work/Third-Projects/theia/packages/core/src/node/messaging/default-messaging-service.ts:100]\n`,
+            `\nconnectionHandler.onConnection(channel)实际上内部调用了factory.listen(channel);
+            \n继续追踪又看到了内部调用了const protocol = this.rpcProtocolFactory(channel, (meth, args) => this.onRequest(meth, ...args));
+            \n`
+        );
+        console.table(handlers.map(handler => {
+            return {
+                rpcPath: handler.path,
+                rpcHandler: handler.onConnection.name,
+            }
+        }))
+
+        for (const connectionHandler of handlers) {
             connectionChannelHandlers.push(connectionHandler.path, (_, channel) => {
                 connectionHandler.onConnection(channel);
             });

@@ -15,6 +15,7 @@
 // *****************************************************************************
 
 const vscode = require('vscode');
+const theia = require('@theia/plugin');
 
 exports.activate = function (context) {
     context.subscriptions.push(vscode.commands.registerCommand('plugin-a.hello', () => {

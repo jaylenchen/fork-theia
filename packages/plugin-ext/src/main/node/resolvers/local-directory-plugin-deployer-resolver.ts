@@ -30,6 +30,13 @@ export class LocalDirectoryPluginDeployerResolver extends LocalPluginDeployerRes
 
     protected async resolveFromLocalPath(pluginResolverContext: PluginDeployerResolverContext, localPath: string): Promise<void> {
         const files = await fs.readdir(localPath);
+        console.log(`\x1b[1;3;30;43m%s\x1b[0m`, `\n 解析本地插件路径(${localPath})：共${files.length}个可用的插件 `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/main/node/plugin-deployer-impl.ts:392]\n`);
+        console.table(files.map(file => {
+            return {
+                file,
+                localPath,
+            }
+        }))
         files.forEach(file =>
             pluginResolverContext.addPlugin(file, path.resolve(localPath, file))
         );

@@ -111,10 +111,16 @@ export class HostedPluginServerImpl implements HostedPluginServer {
     }
 
     async getDeployedPluginIds(): Promise<PluginIdentifiers.VersionedId[]> {
+        console.log(`\x1b[1;3;30;42m%s\x1b[0m`, `\n ==========>==========>获取所有已部署的插件ID[调用HostedPluginServerImpl getDeployedPluginIds] `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/hosted/node/plugin-service.ts:114] `);
+
         const backendPlugins = (await this.deployerHandler.getDeployedBackendPlugins())
             .filter(this.backendPluginHostableFilter);
+
         if (backendPlugins.length > 0) {
-            this.hostedPlugin.runPluginServer(this.getServerName());
+            const serverName = this.getServerName();
+            // HostedPluginSupport run plugin server
+            // /Users/work/Third-Projects/theia/packages/plugin-ext/src/hosted/node/hosted-plugin.ts
+            this.hostedPlugin.runPluginServer(serverName);
         }
         const plugins = new Set<PluginIdentifiers.VersionedId>();
         const addIds = async (identifiers: PluginIdentifiers.VersionedId[]): Promise<void> => {
@@ -169,6 +175,7 @@ export class HostedPluginServerImpl implements HostedPluginServer {
             if (!this.isRelevantPlugin(versionedId)) {
                 continue;
             }
+            // deployerHandler位于packages/plugin-ext/src/hosted/node/hosted-plugin-deployer-handler.ts
             let plugin = this.deployerHandler.getDeployedPlugin(versionedId);
             if (!plugin) {
                 if (!extraDeployedPlugins) {

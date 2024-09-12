@@ -73,25 +73,72 @@ export class FrontendApplication {
      * - reveal the application shell if it was hidden by a startup indicator
      */
     async start(): Promise<void> {
+        // 启动前端应用程序计时器
         const startup = this.backendStopwatch.start('frontend');
 
-        await this.measure('startContributions', () => this.startContributions(), 'Start frontend contributions', false);
+        const contributions = this.contributions.getContributions()
+        console.log(`\x1b[1;3;30;43m%s\x1b[0m`, `\n FrontendApplication当前有${contributions.length}个可用的Contribution `, ` [/Users/work/Third-Projects/theia/packages/core/src/node/backend-application.ts:226]\n`);
+        console.table(contributions.map(contribution => {
+            const Contribution = contribution.constructor as any
+            const methods = [];
+            if (Contribution.prototype.initialize) methods.push('initialize');
+            if (Contribution.prototype.configure) methods.push('configure');
+            if (Contribution.prototype.onStart) methods.push('onStart');
+            return {
+                "FrontendApplication Contribution": Contribution.name,
+                File: Contribution.file,
+                Method: methods.join(" | ")
+            }
+        }).sort((a, b) => {
+            if (a.Method === '' && b.Method === '') return 0;
+            if (a.Method === '') return 1;
+            if (b.Method === '') return -1;
+            const order = ['initialize', 'configure', 'onStart'];
+            const aIndex = order.indexOf(a.Method.split(' | ')[0]);
+            const bIndex = order.indexOf(b.Method.split(' | ')[0]);
+            return aIndex - bIndex;
+        }))
+
+        // 将所有frontend application contributions初始化
+        await this.initializeContributions()
+        await this.configureContributions()
+        await this.startContributions()
+        // 等待所有frontend application contributions初始化完成
+        // 然后将stateService的state设置为started_contributions，标记为frontend application contributions初始化完成
         this.stateService.state = 'started_contributions';
 
+        // 获取前端应用要挂载的DOM元素，其实就是document.body
         const host = await this.getHost();
+        // 将应用程序 shell 附加到 host 元素。如果存在启动指示器，则将 shell 插入到该指示器之前，以便它尚不可见。
         this.attachShell(host);
+        // 将工具提示容器附加到 host 元素
         this.attachTooltip(host);
+
+        // 如果没有提供参数，则在下一个动画帧后解析，或者在给定的动画帧数后解析。
         await animationFrame();
+        // 等待浏览器刷新屏幕一次，然后将stateService的state设置为attached_shell，标记为应用程序shell已附加到DOM
         this.stateService.state = 'attached_shell';
 
+        // 初始化应用程序 shell 布局，要么使用布局恢复服务，要么创建默认布局。
+        // 而默认布局的创建是通过让FrontendApplication的Contributions依次初始化 shell 布局开始的。
+        // 用户可以重写此方法以创建特定于应用程序的自定义布局。
         await this.measure('initializeLayout', () => this.initializeLayout(), 'Initialize the workbench layout', false);
+        // 等待所有shell布局初始化完成，然后将stateService的state设置为initialized_layout，标记为应用程序shell布局初始化完成
         this.stateService.state = 'initialized_layout';
+        // 派发所有frontend application contributions的onDidInitializeLayout事件
         await this.fireOnDidInitializeLayout();
 
+        // 如果存在启动指示器，则首先使用 theia-hidden CSS 类将其隐藏，然后在一段时间后将其移除。
+        // 移除的延迟时间取自 CSS 过渡持续时间。
         await this.measure('revealShell', () => this.revealShell(host), 'Replace loading indicator with ready workbench UI (animation)', false);
+        // 注册全局事件监听器
         this.registerEventListeners();
+
+        // 将stateService的state设置为ready，标记为前端应用程序已准备好
         this.stateService.state = 'ready';
 
+        // 停止前端应用程序启动计时器
+        // 这个玩意是用来记录前端应用程序启动的时间的
         startup.then(idToken => this.backendStopwatch.stop(idToken, 'Frontend application start', []));
     }
 
@@ -246,11 +293,27 @@ export class FrontendApplication {
         }
     }
 
-    /**
-     * Initialize and start the frontend application contributions.
-     */
-    protected async startContributions(): Promise<void> {
-        for (const contribution of this.contributions.getContributions()) {
+    protected async initializeContributions(): Promise<void> {
+        const contributions = this.contributions.getContributions()
+
+        // =======================constribution initialize start============================
+        console.log(`\x1b[1;3;30;43m%s\x1b[0m`, `\n FrontendApplicaton当前有${contributions.filter(c => !!c.initialize).length}个拥有initialize方法的Contribution `, ` [/Users/work/Third-Projects/theia/packages/core/src/browser/frontend-application.ts:310]\n`);
+        console.table(contributions.filter(c => !!c.initialize).map(contribution => {
+            const Contribution = contribution.constructor as any
+            return {
+                "FrontendApplicaton Contribution": Contribution.name,
+                File: Contribution.file,
+                Method: [Contribution.prototype.initialize, Contribution.prototype.configure, Contribution.prototype.onStart].filter((c) => !!c).map(c => {
+                    switch (c) {
+                        case Contribution.prototype.initialize: return 'initialize'
+                        case Contribution.prototype.configure: return 'configure'
+                        case Contribution.prototype.onStart: return 'onStart'
+                        default: return 'unknown'
+                    }
+                }).join(" | ")
+            }
+        }))
+        for (const contribution of contributions) {
             if (contribution.initialize) {
                 try {
                     await this.measure(contribution.constructor.name + '.initialize',
@@ -261,8 +324,30 @@ export class FrontendApplication {
                 }
             }
         }
+        // =======================constribution initialize end============================
+    }
 
-        for (const contribution of this.contributions.getContributions()) {
+    protected async configureContributions(): Promise<void> {
+        const contributions = this.contributions.getContributions()
+
+        // =======================constribution configure start============================
+        console.log(`\x1b[1;3;30;43m%s\x1b[0m`, `\n FrontendApplicaton当前有${contributions.filter(c => !!c.configure).length}个拥有configure方法的Contribution `, ` [/Users/work/Third-Projects/theia/packages/core/src/browser/frontend-application.ts:341]\n`);
+        console.table(contributions.filter(c => !!c.configure).map(contribution => {
+            const Contribution = contribution.constructor as any
+            return {
+                "FrontendApplicaton Contribution": Contribution.name,
+                File: Contribution.file,
+                Method: [Contribution.prototype.initialize, Contribution.prototype.configure, Contribution.prototype.onStart].filter((c) => !!c).map(c => {
+                    switch (c) {
+                        case Contribution.prototype.initialize: return 'initialize'
+                        case Contribution.prototype.configure: return 'configure'
+                        case Contribution.prototype.onStart: return 'onStart'
+                        default: return 'unknown'
+                    }
+                }).join(" | ")
+            }
+        }))
+        for (const contribution of contributions) {
             if (contribution.configure) {
                 try {
                     await this.measure(contribution.constructor.name + '.configure',
@@ -273,6 +358,14 @@ export class FrontendApplication {
                 }
             }
         }
+        // =======================constribution configure end============================
+    }
+
+    /**
+     * Initialize and start the frontend application contributions.
+     */
+    protected async startContributions(): Promise<void> {
+        const contributions = this.contributions.getContributions()
 
         /**
          * FIXME:
@@ -288,7 +381,25 @@ export class FrontendApplication {
         await this.measure('menus.onStart',
             () => this.menus.onStart()
         );
-        for (const contribution of this.contributions.getContributions()) {
+
+        // =======================constribution onStart start============================
+        console.log(`\x1b[1;3;30;43m%s\x1b[0m`, `\n FrontendApplicaton当前有${contributions.filter(c => !!c.onStart).length}个拥有onStart方法的Contribution `, ` [/Users/work/Third-Projects/theia/packages/core/src/browser/frontend-application.ts:387]\n`);
+        console.table(contributions.filter(c => !!c.onStart).map(contribution => {
+            const Contribution = contribution.constructor as any
+            return {
+                "FrontendApplicaton Contribution": Contribution.name,
+                File: Contribution.file,
+                Method: [Contribution.prototype.initialize, Contribution.prototype.configure, Contribution.prototype.onStart].filter((c) => !!c).map(c => {
+                    switch (c) {
+                        case Contribution.prototype.initialize: return 'initialize'
+                        case Contribution.prototype.configure: return 'configure'
+                        case Contribution.prototype.onStart: return 'onStart'
+                        default: return 'unknown'
+                    }
+                }).join(" | ")
+            }
+        }))
+        for (const contribution of contributions) {
             if (contribution.onStart) {
                 try {
                     await this.measure(contribution.constructor.name + '.onStart',
@@ -299,6 +410,7 @@ export class FrontendApplication {
                 }
             }
         }
+        // =======================constribution onStart end============================
     }
 
     /**

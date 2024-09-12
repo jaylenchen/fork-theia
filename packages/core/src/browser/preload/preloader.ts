@@ -31,7 +31,16 @@ export class Preloader {
     protected readonly contributions: ContributionProvider<PreloadContribution>;
 
     async initialize(): Promise<void> {
-        await Promise.allSettled(this.contributions.getContributions().map(contrib => contrib.initialize()));
+        console.log(`\x1b[1;3;30;43m%s\x1b[0m`, `\n ==========>==========>Preloader初始化 `, ` [/Users/work/Third-Projects/theia/packages/core/src/browser/preload/preloader.ts:34]`);
+
+        const contributions = this.contributions.getContributions()
+        console.log(`\x1b[1;3;30;43m%s\x1b[0m`, `\n ==========>==========>PreloadContribution 初始化[调用I18nPreloadContribution、OSPreloadContribution、ThemePreloadContribution共${contributions.length}个类的initialize方法] `, ` [/Users/work/Third-Projects/theia/packages/core/src/browser/preload/preloader.ts:37]\n`);
+        console.table(contributions.map((c) => ({
+            "name": (c as any).constructor.name,
+            method: "initialize"
+        })))
+
+        await Promise.allSettled(contributions.map(contrib => contrib.initialize()));
     }
 
 }

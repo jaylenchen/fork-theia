@@ -85,6 +85,8 @@ export class WorkspaceCliContribution implements CliContribution {
 @injectable()
 export class DefaultWorkspaceServer implements WorkspaceServer, BackendApplicationContribution {
 
+    static file = "/Users/work/Third-Projects/theia/packages/workspace/src/node/default-workspace-server.ts"
+
     protected root: Deferred<string | undefined> = new Deferred();
     /**
      * Untitled workspaces that are not among the most recent N workspaces will be deleted on start. Increase this number to keep older files,
@@ -112,6 +114,8 @@ export class DefaultWorkspaceServer implements WorkspaceServer, BackendApplicati
     }
 
     async onStart(): Promise<void> {
+        console.log(`\x1b[1;4;35m%s\x1b[0m`, `\n###[启动BackendApplication Contribution] DefaultWorkspaceServer `, ` [/Users/work/Third-Projects/theia/packages/workspace/src/node/default-workspace-server.ts:117]`, `\n DefaultWorkspaceServer onStart主要清理旧的未命名工作区，以保持工作区列表的整洁和高效。通过这种方式，系统能够自动管理和删除不再需要的临时工作区文件\n`);
+
         await this.removeOldUntitledWorkspaces();
     }
 

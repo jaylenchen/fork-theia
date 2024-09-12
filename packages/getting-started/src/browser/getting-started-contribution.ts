@@ -35,6 +35,8 @@ export const GettingStartedCommand = {
 @injectable()
 export class GettingStartedContribution extends AbstractViewContribution<GettingStartedWidget> implements FrontendApplicationContribution {
 
+    static file = "packages/getting-started/src/browser/getting-started-contribution.ts"
+
     @inject(CommandRegistry)
     protected readonly commandRegistry: CommandRegistry;
 

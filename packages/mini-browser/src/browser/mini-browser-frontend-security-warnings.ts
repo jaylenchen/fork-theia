@@ -26,6 +26,8 @@ import { MiniBrowserEnvironment } from './environment/mini-browser-environment';
 @injectable()
 export class MiniBrowserFrontendSecurityWarnings implements FrontendApplicationContribution {
 
+    static file = "packages/mini-browser/src/browser/mini-browser-frontend-security-warnings.ts"
+
     @inject(WindowService)
     protected windowService: WindowService;
 

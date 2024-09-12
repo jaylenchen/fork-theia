@@ -25,6 +25,9 @@ import { HTTP_FILE_UPLOAD_PATH } from '../common/file-upload';
 
 @injectable()
 export class NodeFileUploadService implements BackendApplicationContribution {
+
+    static file = "/Users/work/Third-Projects/theia/packages/filesystem/src/node/node-file-upload-service.ts"
+
     private static readonly UPLOAD_DIR = 'theia_upload';
 
     async configure(app: express.Application): Promise<void> {

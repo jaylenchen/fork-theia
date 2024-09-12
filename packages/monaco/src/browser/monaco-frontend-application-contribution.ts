@@ -37,6 +37,8 @@ import { IStandaloneThemeService } from '@theia/monaco-editor-core/esm/vs/editor
 @injectable()
 export class MonacoFrontendApplicationContribution implements FrontendApplicationContribution, StylingParticipant {
 
+    static file = "packages/monaco/src/browser/monaco-frontend-application-contribution.ts"
+
     @inject(MonacoTextModelService)
     protected readonly textModelService: MonacoTextModelService;
 

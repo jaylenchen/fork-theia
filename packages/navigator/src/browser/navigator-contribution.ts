@@ -124,6 +124,8 @@ export const FILE_NAVIGATOR_TOGGLE_COMMAND_ID = 'fileNavigator:toggle';
 @injectable()
 export class FileNavigatorContribution extends AbstractViewContribution<FileNavigatorWidget> implements FrontendApplicationContribution, TabBarToolbarContribution {
 
+    static file = "packages/navigator/src/browser/navigator-contribution.ts"
+
     @inject(ClipboardService)
     protected readonly clipboardService: ClipboardService;
 

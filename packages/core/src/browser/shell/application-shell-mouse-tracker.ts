@@ -32,6 +32,8 @@ import { addEventListener, Widget } from '../widgets';
 @injectable()
 export class ApplicationShellMouseTracker implements FrontendApplicationContribution {
 
+    static file = "packages/core/src/browser/shell/application-shell-mouse-tracker.ts"
+
     @inject(ApplicationShell)
     protected readonly applicationShell: ApplicationShell;
 

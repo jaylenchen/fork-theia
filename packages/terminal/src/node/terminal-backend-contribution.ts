@@ -23,6 +23,9 @@ import { StringBufferingStream } from './buffering-stream';
 
 @injectable()
 export class TerminalBackendContribution implements MessagingService.Contribution {
+
+    static file = "/Users/work/Third-Projects/theia/packages/terminal/src/node/terminal-backend-contribution.ts"
+
     protected readonly decoder = new TextDecoder('utf-8');
 
     @inject(ProcessManager)
@@ -32,6 +35,8 @@ export class TerminalBackendContribution implements MessagingService.Contributio
     protected readonly logger: ILogger;
 
     configure(service: MessagingService): void {
+        console.log(`\x1b[1;4;35m%s\x1b[0m`, `\n######[初始化BackendApplication Contribution]\n######[调用2个DefaultMessagingService Contribution的configure方法配置]\n######[调用TerminalBackendContribution的configure方法] `, ` [/Users/work/Third-Projects/theia/packages/terminal/src/node/terminal-backend-contribution.ts:38]`);
+
         service.registerChannelHandler(`${terminalsPath}/:id`, (params: { id: string }, channel) => {
             const id = parseInt(params.id, 10);
             const termProcess = this.processManager.get(id);

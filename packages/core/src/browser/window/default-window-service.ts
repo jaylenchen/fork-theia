@@ -28,6 +28,8 @@ import { FrontendApplication } from '../frontend-application';
 @injectable()
 export class DefaultWindowService implements WindowService, FrontendApplicationContribution {
 
+    static file = "packages/core/src/browser/window/default-window-service.ts"
+
     protected frontendApplication: FrontendApplication;
     protected allowVetoes = true;
 

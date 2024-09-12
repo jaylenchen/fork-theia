@@ -25,6 +25,8 @@ import { IconContribution, DeployedPlugin, IconDefinition } from '../../common/p
 @injectable()
 export class PluginIconService implements Disposable {
 
+    static file = "packages/plugin-ext/src/main/browser/plugin-icon-service.ts"
+
     @inject(MonacoIconRegistry)
     protected readonly iconRegistry: MonacoIconRegistry;
 

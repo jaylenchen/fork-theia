@@ -34,6 +34,9 @@ import { EditorPreviewManager } from './editor-preview-manager';
 
 @injectable()
 export class EditorPreviewTreeDecorator implements TreeDecorator, FrontendApplicationContribution {
+
+    static file = "packages/editor-preview/src/browser/editor-preview-tree-decorator.ts"
+
     @inject(EditorPreviewManager) protected readonly editorPreviewManager: EditorPreviewManager;
     @inject(ApplicationShell) protected readonly shell: ApplicationShell;
 

@@ -277,6 +277,8 @@ export class DefaultUriLabelProviderContribution implements LabelProviderContrib
 @injectable()
 export class LabelProvider implements FrontendApplicationContribution {
 
+    static file = "packages/core/src/browser/label-provider.ts"
+
     protected readonly onDidChangeEmitter = new Emitter<DidChangeLabelEvent>();
 
     @inject(ContributionProvider) @named(LabelProviderContribution)

@@ -76,6 +76,8 @@ export namespace Dialog {
 @injectable()
 export class DialogOverlayService implements FrontendApplicationContribution {
 
+    static file = "packages/core/src/browser/dialogs.ts"
+
     protected static INSTANCE: DialogOverlayService;
 
     static get(): DialogOverlayService {

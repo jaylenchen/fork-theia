@@ -32,6 +32,10 @@ export type RpcServer<Client> = Disposable & {
      * a client is used as a local object
      * to handle RPC messages from the remote server.
      */
+    /**
+     * 如果这个服务器是远程服务器的代理，
+     * 则一个客户端被当作一个处理远程服务器RPC消息的本地对象
+     */
     setClient(client: Client | undefined): void;
     getClient?(): Client | undefined;
 };
@@ -45,15 +49,33 @@ export type RpcProxy<T> = T & RpcConnectionEventEmitter;
 export class RpcConnectionHandler<T extends object> implements ConnectionHandler {
     constructor(
         readonly path: string,
+        /**
+         * 这个函数调用起来后生成处理rpc请求的本地实际对象，本地可能指的是frontend本地，也可能是backend本地，最终会设置为factory.targetf
+         */
         readonly targetFactory: (proxy: RpcProxy<T>) => any,
         readonly factoryConstructor: new () => RpcProxyFactory<T> = RpcProxyFactory
     ) { }
 
-    onConnection(connection: Channel): void {
+    onConnection(channel: Channel): void {
+        /**
+         * 要设置处理rpc请求的target有两种方式：
+         * 1、在初始化rpcProxyFactory时，传入一个target；
+         * 2、调用targetFactory返回一个target，然后通过factory.target = target来设置
+         */
         const factory = new this.factoryConstructor();
+        // 创建一个代理对象，这个代理对象代理的是factory对象
         const proxy = factory.createProxy();
+        // ========debug================
+        if (this.path === '/services/plugin-ext') {
+            Reflect.defineProperty(proxy, "name", {
+                value: "/services/plugin-ext"
+            })
+        }
+        // ========debug================
+        // 设置要处理rpc请求的对象target
         factory.target = this.targetFactory(proxy);
-        factory.listen(connection);
+        // 监听rpc连接
+        factory.listen(channel);
     }
 }
 /**
@@ -119,10 +141,22 @@ export class RpcProxyFactory<T extends object> implements ProxyHandler<T> {
      * @param target - The object to expose to RPC methods calls.  If this
      *   is omitted, the proxy won't be able to handle requests, only send them.
      */
+    /**
+     * 
+     * target 是一个对象，将被暴露给远程过程调用（RPC）方法，这意味着通过 RPC，可以调用 target 对象上的方法。
+     * 如果省略了 target 参数，代理将无法处理请求，只能发送请求。
+     * 这种情况下，代理将仅作为客户端使用，而不能作为服务器端处理传入的 RPC 请求。
+     */
     constructor(public target?: any, protected rpcProtocolFactory = defaultRpcProtocolFactory) {
         this.waitForConnection();
     }
 
+    /**
+     * 等待json-rpc连接
+     * 实现逻辑就是创建一个deferred对象，
+     * 在其他代码块中（listen方法）：当外部连接建立时，会调用deferred对象resolve方法，并将rpcProtocol对象传入
+     * 此时逻辑就会走回这里，然后会触发onDidOpenConnectionEmitter事件
+     */
     protected waitForConnection(): void {
         this.rpcDeferred = new Deferred<RpcProtocol>();
         this.rpcDeferred.promise.then(protocol => {
@@ -142,10 +176,30 @@ export class RpcProxyFactory<T extends object> implements ProxyHandler<T> {
      * responses.
      */
     listen(channel: Channel): void {
+        // console.log(`\x1b[1;3;30;44m%s\x1b[0m`, `\n==========>==========>在浏览器上调用RpxProxyFactory listen方法监听对应path的[channel: ${channel}]`,
+        //     `[/Users/work/Third-Projects/theia/packages/core/src/common/messaging/proxy-factory.ts:180]`,
+        //     `\n\n`
+        // );
+
+        // console.log(`\x1b[1;3;30;44m%s\x1b[0m`, `\n==========>==========>在浏览器上调用RpxProxyFactory rpcProtocolFactory创建用来发消息和处理消息的rpc protocol`,
+        //     `[/Users/work/Third-Projects/theia/packages/core/src/common/messaging/proxy-factory.ts:185]`,
+        //     `\n实际上这个步骤就是真正的监听对应path，然后接收发送消息以及使用RpxProxyFactory onRequest方法处理rpc发送来的method方法和方法参数args\n`
+        // );
+        /**
+         * 绑定onRequest，你可以等待对端的请求到来时，触发这个方法
+         */
         const protocol = this.rpcProtocolFactory(channel, (meth, args) => this.onRequest(meth, ...args));
+        /**
+         * 绑定onNotification，你可以等待对端的通知到来时，触发这个方法
+         */
         protocol.onNotification(event => this.onNotification(event.method, ...event.args));
 
+        // 通知deferred对象，rpc连接已经建立,并传入rpcProtocol对象
+        // 这么做会触发waitForConnection方法中的promise.then方法
         this.rpcDeferred.resolve(protocol);
+        // console.log(`\x1b[1;3;30;44m%s\x1b[0m`, `\n==========>==========>在浏览器上调用RpxProxyFactory this.rpcDeferred.resolve(protocol)表明rpc建立成功，并传入用来通讯的protocol`,
+        //     `[/Users/work/Third-Projects/theia/packages/core/src/common/messaging/proxy-factory.ts:190]`,
+        // );
     }
 
     /**
@@ -162,10 +216,22 @@ export class RpcProxyFactory<T extends object> implements ProxyHandler<T> {
      */
     protected async onRequest(method: string, ...args: any[]): Promise<any> {
         try {
+            // 如果有暴露rpc对象，那么会调用这个对象的方法
+            // 没有暴露rpc对象，那么会抛出异常
+            // 这个target可以在构造函数中传入或者是通过factory.target来设置
             if (this.target) {
+                if (method === "deploy") {
+                    console.log(`\x1b[38;5;214m ###############🚀 ~ rpc proxy name 是${(this as any).name}[/Users/work/Third-Projects/theia/packages/core/src/common/messaging/proxy-factory.ts:196]\x1b[0m`);
+
+                    // console.log(`\x1b[38; 5; 214m ###############🚀 ~等待target处理前端发过来的rpc请求...[/Users/work / Third - Projects / theia / packages / core / src / common / messaging / proxy - factory.ts: 203]\x1b[0m`);
+                    // console.log(`\x1b[38; 5; 213m 此时的target是${this.target.constructor.name} \x1b[0m`);
+                    console.log(`\x1b[38; 5; 213m 准备调用target的方法是${method} \x1b[0m`);
+                    // console.log(`\x1b[38; 5; 213m 传递给target方法${method}的参数是${args} \x1b[0m`);
+                }
+
                 return await this.target[method](...args);
             } else {
-                throw new Error(`no target was set to handle ${method}`);
+                throw new Error(`no target was set to handle ${method} `);
             }
         } catch (error) {
             throw this.serializeError(error);
@@ -179,6 +245,7 @@ export class RpcProxyFactory<T extends object> implements ProxyHandler<T> {
      * methods calls.
      */
     protected onNotification(method: string, ...args: any[]): void {
+        // 如果有暴露rpc对象，那么会调用这个对象的方法
         if (this.target) {
             this.target[method](...args);
         }
@@ -191,9 +258,18 @@ export class RpcProxyFactory<T extends object> implements ProxyHandler<T> {
      *
      * If `T` implements `RpcServer` then a client is used as a target object for a remote target object.
      */
+    /**
+     * 该方法用于创建一个代理（Proxy），该代理暴露了类型为 T 的对象的接口。
+     * 具体来说，这个代理可以用于对远程目标对象进行远程过程调用（RPC），就像它是本地对象一样。
+     * 这意味着通过这个代理，可以像操作本地对象一样，调用类型为 T 的对象的方法和属性。
+     * 如果 T 实现了 RpcServer 接口，那么客户端将被用作远程目标对象的目标对象。这意味着在这种情况下，代理不仅可以用于调用远程方法，
+     * 还可以将客户端作为目标对象，处理来自远程目标对象的调用。
+     * 这种双向通信机制使得代理不仅可以发送请求，还可以接收和处理请求，从而实现更复杂的交互模式。
+     */
     createProxy(): RpcProxy<T> {
+        // 创建一个代理对象，被代理的对象是当前对象自己，也就是rpcProxyFactory对象
         const result = new Proxy<T>(this as any, this);
-        return result as any;
+        return result as RpcProxy<T>
     }
 
     /**
@@ -218,7 +294,24 @@ export class RpcProxyFactory<T extends object> implements ProxyHandler<T> {
      * @param receiver - unused.
      * @returns A callable that executes the RPC call.
      */
+    /**
+     * 
+     * @param target 首先，注释解释了该方法的主要功能：获取一个可调用对象，该对象执行 RPC 方法调用。
+     * 这意味着通过代理对象，可以像调用本地方法一样，调用远程对象的方法。代理对象上的每个属性都对应一个远程方法，
+     * 当访问这些属性时，会返回一个可调用对象。接下来，注释详细描述了如何使用这个代理对象。
+     * 通过一个示例，注释展示了如何创建一个代理工厂并生成代理对象。
+     * 例如，假设有一个代理工厂 RpcProxyFactory<Foo>('/foo')，通过调用 fooProxyFactory.createProxy() 可以创建一个代理对象 fooProxy。
+     * 当访问 fooProxy.bar 时，会返回一个可调用对象，该对象在被调用时会执行对远程 Foo 对象的 bar 方法的 RPC 调用。
+     * 因此，调用 fooProxy.bar() 实际上是在远程 Foo 对象上调用 bar 方法。
+     * 注释解释了方法的参数和返回值。参数 target 和 receiver 未被使用，而参数 p 表示在代理对象上访问的属性。该方法返回一个可调用对象，该对象执行 RPC 调用。
+     */
     get(target: T, p: PropertyKey, receiver: any): any {
+        /**
+         * 用户会调用对应接口的方法，由于使用的是proxy，所以会走get方法
+         * 因为用户调用的是指定接口的方法，那么走get方法的话会返回的是一个函数
+         * 比如：fooProxy.bar()，那么fooProxy.bar会返回一个函数，这个函数就是从这里返回的
+         * 默认地，这个get方法会返回一个函数，这个函数会调用sendRequest方法，这个方法会返回一个promise
+         */
         if (p === 'setClient') {
             return (client: any) => {
                 this.target = client;
@@ -241,14 +334,16 @@ export class RpcProxyFactory<T extends object> implements ProxyHandler<T> {
         return (...args: any[]) => {
             const method = p.toString();
             const capturedError = new Error(`Request '${method}' failed`);
-            return this.rpcDeferred.promise.then(connection =>
+            return this.rpcDeferred.promise.then(rpcProtocol =>
                 new Promise<void>((resolve, reject) => {
                     try {
                         if (isNotify) {
-                            connection.sendNotification(method, args);
+                            rpcProtocol.sendNotification(method, args);
                             resolve(undefined);
                         } else {
-                            const resultPromise = connection.sendRequest(method, args) as Promise<any>;
+                            // 当用户调用指定接口的json-rpc方法时，因为是一个proxy，所以会走get方法
+                            // 如果是发送rpc请求，那么会调用sendRequest方法，这个方法会返回一个promise
+                            const resultPromise = rpcProtocol.sendRequest(method, args) as Promise<any>;
                             resultPromise
                                 .catch((err: any) => reject(this.deserializeError(capturedError, err)))
                                 .then((result: any) => resolve(result));
@@ -290,7 +385,7 @@ export class RpcProxyFactory<T extends object> implements ProxyHandler<T> {
                 return ApplicationError.fromJson(e.code, {
                     message: message || capturedError.message,
                     data,
-                    stack: `${capturedStack}\nCaused by: ${stack}`
+                    stack: `${capturedStack} \nCaused by: ${stack} `
                 });
             }
             e.stack = capturedStack;

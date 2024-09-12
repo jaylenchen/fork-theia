@@ -389,6 +389,8 @@ export namespace DebugBreakpointWidgetCommands {
 @injectable()
 export class DebugFrontendApplicationContribution extends AbstractViewContribution<DebugWidget>
     implements TabBarToolbarContribution, ColorContribution, FrontendApplicationContribution {
+    
+    static file = "packages/debug/src/browser/debug-frontend-application-contribution.ts"
 
     @inject(DebugService)
     protected readonly debug: DebugService;

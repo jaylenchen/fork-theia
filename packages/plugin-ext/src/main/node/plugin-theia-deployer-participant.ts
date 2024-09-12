@@ -21,12 +21,19 @@ import { PluginDeployerParticipant, PluginDeployerStartContext } from '../../com
 @injectable()
 export class PluginTheiaDeployerParticipant implements PluginDeployerParticipant {
 
+    static file = "/Users/work/Third-Projects/theia/packages/plugin-ext/src/main/node/plugin-theia-deployer-participant.ts"
+
     @inject(PluginTheiaEnvironment)
     protected readonly environments: PluginTheiaEnvironment;
 
     async onWillStart(context: PluginDeployerStartContext): Promise<void> {
+        console.log(`\x1b[1;4;35m%s\x1b[0m`, `\n######[初始化PluginDeployerContribution阶段]\n######[初始化PluginDeployerParticipant几个实现了onWillStart方法的Contribution]\n######[调用PluginTheiaDeployerParticipant的onWillStart方法] `, `[/Users/work/Third-Projects/theia/packages/plugin-ext/src/main/node/plugin-theia-deployer-participant.ts:30]`);
+
         const pluginsDirUri = await this.environments.getPluginsDirUri();
-        context.userEntries.push(pluginsDirUri.withScheme('local-dir').toString());
+        // local-dir:/Users/work/.theia/plugins
+        const entry = pluginsDirUri.withScheme('local-dir').toString()
+
+        context.userEntries.push(entry);
     }
 
 }

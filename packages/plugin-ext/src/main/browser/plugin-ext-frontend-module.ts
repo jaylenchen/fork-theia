@@ -121,11 +121,18 @@ export default new ContainerModule((bind, unbind, isBound, rebind) => {
 
     bind(EditorModelService).toSelf().inSingletonScope();
 
-    bind(FrontendApplicationContribution).toDynamicValue(ctx => ({
-        onStart(): MaybePromise<void> {
-            ctx.container.get(HostedPluginSupport).onStart(ctx.container);
+    bind(FrontendApplicationContribution).toDynamicValue(ctx => {
+        class MyBrowserHostedPluginSupport {
+
+            static file = "packages/plugin-ext/src/main/browser/plugin-ext-frontend-module.ts"
+
+            onStart(): MaybePromise<void> {
+                ctx.container.get(HostedPluginSupport).onStart(ctx.container);
+            }
         }
-    }));
+
+        return new MyBrowserHostedPluginSupport()
+    });
     bind(HostedPluginServer).toDynamicValue(ctx => {
         const connection = ctx.container.get(WebSocketConnectionProvider);
         const hostedWatcher = ctx.container.get(HostedPluginWatcher);
@@ -146,6 +153,8 @@ export default new ContainerModule((bind, unbind, isBound, rebind) => {
     }));
 
     bind(PluginServer).toDynamicValue(ctx => {
+        console.log(`\x1b[1;4;30;42m%s\x1b[0m`, ` 在浏览器上plugin-ext-frontend-module中绑定能够使用PluginServer接口API的rpc proxy实例以使用pluginServer发送[path: ${pluginServerJsonRpcPath}]rpc请求 `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/main/browser/plugin-ext-frontend-module.ts]\n`)
+
         const provider = ctx.container.get(WebSocketConnectionProvider);
         return provider.createProxy<PluginServer>(pluginServerJsonRpcPath);
     }).inSingletonScope();

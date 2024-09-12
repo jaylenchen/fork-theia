@@ -87,6 +87,8 @@ export class HostedPluginSupport {
 
     runPluginServer(serverName?: string): void {
         if (!this.isPluginProcessRunning) {
+            // /Users/work/Third-Projects/theia/packages/plugin-ext/src/hosted/node/hosted-plugin-process.ts
+            console.log(`\x1b[1;3;30;42m%s\x1b[0m`, `\n ==========>==========>HostedPluginSupport启动plugin server[调用HostedPluginSupport runPluginServer] `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/hosted/node/hosted-plugin.ts:91] `);
             this.hostedPluginProcess.runPluginServer(serverName);
             this.isPluginProcessRunning = true;
         }

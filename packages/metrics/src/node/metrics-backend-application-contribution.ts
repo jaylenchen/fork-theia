@@ -24,6 +24,8 @@ import { MetricsContribution } from './metrics-contribution';
 
 @injectable()
 export class MetricsBackendApplicationContribution implements BackendApplicationContribution {
+
+    static file = "/Users/work/Third-Projects/theia/packages/metrics/src/node/metrics-backend-application-contribution.ts"
     static ENDPOINT = '/metrics';
     constructor(
         @inject(ContributionProvider) @named(MetricsContribution)
@@ -39,6 +41,8 @@ export class MetricsBackendApplicationContribution implements BackendApplication
     }
 
     onStart(server: http.Server | https.Server): void {
+        console.log(`\x1b[1;4;35m%s\x1b[0m`, `\n###[调用BackendApplication Contribution onStart启动] MetricsBackendApplicationContribution `, ` [/Users/work/Third-Projects/theia/packages/metrics/src/node/metrics-backend-application-contribution.ts:44]`);
+
         this.metricsProviders.getContributions().forEach(contribution => {
             contribution.startCollecting();
         });

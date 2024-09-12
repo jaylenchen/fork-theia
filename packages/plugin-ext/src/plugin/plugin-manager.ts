@@ -130,7 +130,7 @@ export abstract class AbstractPluginManagerExtImpl<P extends Record<string, any>
         this.messageRegistryProxy = this.rpc.getProxy(PLUGIN_RPC_CONTEXT.MESSAGE_REGISTRY_MAIN);
         this.notificationMain = this.rpc.getProxy(PLUGIN_RPC_CONTEXT.NOTIFICATION_MAIN);
     }
-
+    // 设置插件的运行宿主，有可能是在前端运行，也有可能是在后端运行
     setPluginHost(pluginHost: PluginHost): void {
         this.host = pluginHost;
     }
@@ -204,8 +204,14 @@ export abstract class AbstractPluginManagerExtImpl<P extends Record<string, any>
     }
 
     async $start(params: PluginManagerStartParams): Promise<void> {
-        this.configStorage = params.configStorage;
+        console.log(`\x1b[1;3;30;43m%s\x1b[0m`, `\n ==========>==========>==========>PluginManagerExtImpl启动插件 `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/plugin/plugin-manager.ts:207]`);
 
+        this.configStorage = params.configStorage;
+        // 调用插件宿主的初始化方法
+        // 分别是前端插件宿主初始化自己的插件，后端插件宿主初始化自己的插件
+        console.log(`\x1b[1;3;30;43m%s\x1b[0m`, `\n ==========>==========>==========>使用Plugin Host初始化插件 ${this.host} `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/plugin/plugin-manager.ts:212]`);
+
+        // host实际是位于packages/plugin-ext/src/hosted/node/plugin-host-rpc.ts的AbstractPluginHostRPC利用createPluginHost创建的
         const [plugins, foreignPlugins] = await this.host.init(params.plugins);
         // add foreign plugins
         for (const plugin of foreignPlugins) {
@@ -243,9 +249,13 @@ export abstract class AbstractPluginManagerExtImpl<P extends Record<string, any>
         this.registry.set(plugin.model.id, plugin);
         const activationEvents = this.getActivationEvents(plugin);
         if (plugin.pluginPath && activationEvents) {
-            const activation = () => this.$activatePlugin(plugin.model.id);
+            const activation = (pluginEvent: string) => {
+                console.log(`\x1b[1;3;30;43m%s\x1b[0m`, `\n ==========>==========>==========>[事件${pluginEvent}触发]-激活插件 ${plugin.model.id}[调用AbstractPluginManagerExtImpl activatePlugin]`, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/plugin/plugin-manager.ts:212]`);
+
+                return this.$activatePlugin(plugin.model.id)
+            };
             // an internal activation event is a subject to change
-            this.setActivation(`onPlugin:${plugin.model.id}`, activation);
+            this.setActivation(`onPlugin:${plugin.model.id}`, () => activation(`onPlugin:${plugin.model.id}`));
             const unsupportedActivationEvents = activationEvents.filter(e => !this.isSupportedActivationEvent(e));
             if (unsupportedActivationEvents.length) {
                 console.warn(`Unsupported activation events: ${unsupportedActivationEvents.join(', ')}, please open an issue: https://github.com/eclipse-theia/theia/issues/new`);
@@ -254,7 +264,7 @@ export abstract class AbstractPluginManagerExtImpl<P extends Record<string, any>
                 if (activationEvent === 'onUri') {
                     activationEvent = `onUri:${this.envExt.uriScheme}://${plugin.model.id}`;
                 }
-                this.setActivation(activationEvent, activation);
+                this.setActivation(activationEvent, () => activation(`onPlugin:${plugin.model.id}`));
             }
         }
     }
@@ -301,9 +311,16 @@ export abstract class AbstractPluginManagerExtImpl<P extends Record<string, any>
                         }
                     }
 
+
+                    console.log(`\x1b[1;3;30;44m%s\x1b[0m`, `\n ==========>==========>调用host 加载 plugin的代码主模块pluginMain[调用this.host.loadPlugin] `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/plugin/plugin-manager.ts:308]`);
+                    // 这个地方调用插件宿主的加载插件方法
+                    // 主逻辑就是利用require或者import引入插件模块
+                    // 然后接着使用插件模块的activate方法激活插件
                     let pluginMain = this.host.loadPlugin(plugin);
                     // see https://github.com/TypeFox/vscode/blob/70b8db24a37fafc77247de7f7cb5bb0195120ed0/src/vs/workbench/api/common/extHostExtensionService.ts#L372-L376
                     pluginMain = pluginMain || {};
+
+                    console.log(`\x1b[1;3;30;44m%s\x1b[0m`, `\n ==========>==========>基于plugin的代码主模块pluginMain启动插件[调用AbstractPluginManagerExtImpl startPlugin] `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/plugin/plugin-manager.ts:314]`);
                     await this.startPlugin(plugin, configStorage, pluginMain);
                     return true;
                 } catch (err) {
@@ -345,14 +362,20 @@ export abstract class AbstractPluginManagerExtImpl<P extends Record<string, any>
     }
 
     protected async activateBySingleEvent(activationEvent: string): Promise<void> {
+        // 找到当前事件对应的激活函数都有哪些
         const activations = this.activations.get(activationEvent);
         if (!activations) {
             return;
         }
+
+        // 拿到激活函数后，将activationEvent对应的激活函数设置为undefined
+        // 因为已经执行了，所以设置为undefined
+        // 做法是设置为undefined
         this.activations.set(activationEvent, undefined);
         const pendingActivations = [];
         while (activations.length) {
-            pendingActivations.push(activations.pop()!());
+            const activation = activations.pop()!
+            pendingActivations.push(activation());
         }
         await Promise.all(pendingActivations);
     }
@@ -409,8 +432,8 @@ export abstract class AbstractPluginManagerExtImpl<P extends Record<string, any>
         const id = plugin.model.displayName || plugin.model.id;
         if (typeof pluginMain[plugin.lifecycle.startMethod] === 'function') {
             await this.localization.initializeLocalizedMessages(plugin, this.envExt.language);
-            const pluginExport = await pluginMain[plugin.lifecycle.startMethod].apply(getGlobal(), [pluginContext]);
-            console.log(`calling activation function on ${id}`);
+            const glb = getGlobal()
+            const pluginExport = await pluginMain[plugin.lifecycle.startMethod].apply(glb, [pluginContext]);
             this.activatedPlugins.set(plugin.model.id, new ActivatedPlugin(pluginContext, pluginExport, stopFn));
         } else {
             // https://github.com/TypeFox/vscode/blob/70b8db24a37fafc77247de7f7cb5bb0195120ed0/src/vs/workbench/api/common/extHostExtensionService.ts#L400-L401
@@ -472,6 +495,8 @@ export class PluginManagerExtImpl extends AbstractPluginManagerExtImpl<PluginMan
     private supportedActivationEvents: Set<string>;
 
     async $init(params: PluginManagerInitializeParams): Promise<void> {
+        console.log(`\x1b[1;3;30;43m%s\x1b[0m`, `\n ==========>==========>==========>PluginManagerExtImpl初始化插件 `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/plugin/plugin-manager.ts:491]`);
+
         this.storage.init(params.globalState, params.workspaceState);
 
         this.envExt.setQueryParameters(params.env.queryParams);
@@ -486,6 +511,8 @@ export class PluginManagerExtImpl extends AbstractPluginManagerExtImpl<PluginMan
         this.preferencesManager.init(params.preferences);
 
         if (params.extApi) {
+            console.log(`\x1b[1;3;30;43m%s\x1b[0m`, `\n ==========>==========>==========>this.host.initExtApi\n ${this.host} `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/plugin/plugin-manager.ts:495]`);
+
             this.host.initExtApi(params.extApi);
         }
 

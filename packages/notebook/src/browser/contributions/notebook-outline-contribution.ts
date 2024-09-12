@@ -41,6 +41,8 @@ export namespace NotebookCellOutlineNode {
 @injectable()
 export class NotebookOutlineContribution implements FrontendApplicationContribution {
 
+    static file = "packages/notebook/src/browser/contributions/notebook-outline-contribution.ts"
+
     @inject(NotebookEditorWidgetService)
     protected readonly notebookEditorWidgetService: NotebookEditorWidgetService;
 

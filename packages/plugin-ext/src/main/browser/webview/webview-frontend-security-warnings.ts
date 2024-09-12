@@ -26,6 +26,8 @@ import { WebviewEnvironment } from './webview-environment';
 @injectable()
 export class WebviewFrontendSecurityWarnings implements FrontendApplicationContribution {
 
+    static file = "packages/plugin-ext/src/main/browser/webview/webview-frontend-security-warnings.ts"
+
     @inject(WindowService)
     protected windowService: WindowService;
 

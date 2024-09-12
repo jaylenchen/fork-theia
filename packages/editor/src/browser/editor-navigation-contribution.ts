@@ -33,6 +33,8 @@ import { nls } from '@theia/core';
 @injectable()
 export class EditorNavigationContribution implements Disposable, FrontendApplicationContribution {
 
+    static file = "packages/editor/src/browser/editor-navigation-contribution.ts"
+
     private static ID = 'editor-navigation-contribution';
     private static CLOSED_EDITORS_KEY = 'recently-closed-editors';
     private static MOUSE_NAVIGATION_PREFERENCE = 'workbench.editor.mouseBackForwardToNavigate';

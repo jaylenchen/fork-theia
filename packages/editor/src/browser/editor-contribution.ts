@@ -35,6 +35,8 @@ import { EditorLanguageStatusService } from './language-status/editor-language-s
 @injectable()
 export class EditorContribution implements FrontendApplicationContribution, CommandContribution, KeybindingContribution, MenuContribution {
 
+    static file = "packages/editor/src/browser/editor-contribution.ts"
+
     @inject(StatusBar) protected readonly statusBar: StatusBar;
     @inject(EditorManager) protected readonly editorManager: EditorManager;
     @inject(EditorLanguageStatusService) protected readonly languageStatusService: EditorLanguageStatusService;

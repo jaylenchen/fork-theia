@@ -174,6 +174,8 @@ interface WidgetDragState {
 }
 
 /**
+ * ApplicationShell 就是整个应用的外壳，用来管理应用的顶级部件，主要是添加、删除或激活部件。
+ * 
  * The application shell manages the top-level widgets of the application. Use this class to
  * add, remove, or activate a widget.
  */
@@ -181,39 +183,53 @@ interface WidgetDragState {
 export class ApplicationShell extends Widget {
 
     /**
+     * 主面板：主要是编辑器的区域。这里通常放编辑器。
+     * 
      * The dock panel in the main shell area. This is where editors usually go to.
      */
     mainPanel: TheiaDockPanel;
 
     /**
+     * 底部面板：与主面板相比，底部面板可以折叠和展开。
+     * 
      * The dock panel in the bottom shell area. In contrast to the main panel, the bottom panel
      * can be collapsed and expanded.
      */
     bottomPanel: TheiaDockPanel;
 
     /**
+     * 左侧面板处理程序：主要应用视图放在这里，例如文件资源管理器和 Git 视图。
+     * 
      * Handler for the left side panel. The primary application views go here, such as the
      * file explorer and the git view.
      */
     leftPanelHandler: SidePanelHandler;
 
     /**
+     *  右侧面板处理程序：次要应用视图放在这里，例如大纲视图。
+     * 
      * Handler for the right side panel. The secondary application views go here, such as the
      * outline view.
      */
     rightPanelHandler: SidePanelHandler;
 
     /**
+     *  应用程序的主要选项。
+     * 
      * General options for the application shell.
      */
     protected options: ApplicationShell.Options;
 
     /**
+     * 顶部显示的固定大小面板：这个通常用来放主菜单。
+     * 
      * The fixed-size panel shown on top. This one usually holds the main menu.
      */
     topPanel: Panel;
 
     /**
+     *  底部面板的当前状态。
+     * 
      * The current state of the bottom panel.
      */
     protected readonly bottomPanelState: SidePanel.State = {
@@ -278,6 +294,7 @@ export class ApplicationShell extends Widget {
     ) {
         super(options as Widget.IOptions);
 
+        // 合并用户定义的应用程序选项与默认选项
         // Merge the user-defined application options with the default options
         this.options = {
             bottomPanel: {
@@ -700,6 +717,8 @@ export class ApplicationShell extends Widget {
     }
 
     /**
+     * 组装应用程序外壳布局。重写此方法以更改主区域和侧面板的排列。
+     * 
      * Assemble the application shell layout. Override this method in order to change the arrangement
      * of the main area and the side panels.
      */

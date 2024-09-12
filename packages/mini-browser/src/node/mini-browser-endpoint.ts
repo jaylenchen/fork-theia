@@ -73,6 +73,8 @@ export interface MiniBrowserEndpointHandler {
 @injectable()
 export class MiniBrowserEndpoint implements BackendApplicationContribution, MiniBrowserService {
 
+    static file = "/Users/work/Third-Projects/theia/packages/mini-browser/src/node/mini-browser-endpoint.ts"
+
     private attachRequestHandlerPromise: Promise<void>;
 
     @inject(ILogger)
@@ -89,6 +91,8 @@ export class MiniBrowserEndpoint implements BackendApplicationContribution, Mini
     }
 
     async onStart(): Promise<void> {
+        console.log(`\x1b[1;4;35m%s\x1b[0m`, `\n###[调用BackendApplication Contribution onStart启动] MiniBrowserEndpoint `, ` [/Users/work/Third-Projects/theia/packages/mini-browser/src/node/mini-browser-endpoint.ts:94]`);
+
         await Promise.all(Array.from(this.getContributions(), async handler => {
             const extensions = await handler.supportedExtensions();
             for (const extension of (Array.isArray(extensions) ? extensions : [extensions]).map(e => e.toLocaleLowerCase())) {

@@ -101,6 +101,8 @@ export class RpcProtocol {
                     return;
                 }
                 case RpcMessageType.Request: {
+                    // console.log(`\x1b[37m🚀 ~ ===================接收并处理前端发来的rpc请求...===================[/Users/work/Third-Projects/theia/packages/core/src/common/message-rpc/rpc-protocol.ts:104]\x1b[0m`);
+
                     this.handleRequest(message.id, message.method, message.args);
                     return;
                 }
@@ -229,6 +231,8 @@ export class RpcProtocol {
         }
 
         try {
+            // console.log("\x1b[38;5;214m ###############🚀 ~ 正式调用后端对象对应的方法处理前端发过来的rpc请求...[/Users/work/Third-Projects/theia/packages/core/src/common/message-rpc/rpc-protocol.ts:234]\x1b[0m");
+
             const result = await this.requestHandler!(method, args);
             this.cancellationTokenSources.delete(id);
             this.encoder.replyOK(output, id, result);

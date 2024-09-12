@@ -35,6 +35,8 @@ import { nls } from '@theia/core/lib/common/nls';
 @injectable()
 export class HostedPluginController implements FrontendApplicationContribution {
 
+    static file = "packages/plugin-dev/src/browser/hosted-plugin-controller.ts"
+
     public static readonly HOSTED_PLUGIN = 'hosted-plugin';
     public static readonly HOSTED_PLUGIN_OFFLINE = 'hosted-plugin-offline';
     public static readonly HOSTED_PLUGIN_FAILED = 'hosted-plugin-failed';

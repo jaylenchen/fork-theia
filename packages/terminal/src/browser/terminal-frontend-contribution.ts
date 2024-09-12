@@ -178,6 +178,8 @@ const ENVIRONMENT_VARIABLE_COLLECTIONS_KEY = 'terminal.integrated.environmentVar
 export class TerminalFrontendContribution implements FrontendApplicationContribution, TerminalService, CommandContribution, MenuContribution,
     KeybindingContribution, TabBarToolbarContribution, ColorContribution {
 
+    static file = "packages/terminal/src/browser/terminal-frontend-contribution.ts"
+
     @inject(ApplicationShell) protected readonly shell: ApplicationShell;
     @inject(ShellTerminalServerProxy) protected readonly shellTerminalServer: ShellTerminalServerProxy;
     @inject(WidgetManager) protected readonly widgetManager: WidgetManager;

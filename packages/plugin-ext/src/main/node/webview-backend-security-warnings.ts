@@ -22,7 +22,11 @@ import { WebviewExternalEndpoint } from '../common/webview-protocol';
 @injectable()
 export class WebviewBackendSecurityWarnings implements BackendApplicationContribution {
 
+    static file = "/Users/work/Third-Projects/theia/packages/plugin-ext/src/main/node/webview-backend-security-warnings.ts"
+
     initialize(): void {
+        console.log(`\x1b[1;4;35m%s\x1b[0m`, `\n###[调用BackendApplicaton8个实现了initialize方法的Contribution的initialize方法进行初始化 ]\n###[初始化BackendApplication Contribution] WebviewBackendSecurityWarnings `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/main/node/webview-backend-security-warnings.ts:28]`);
+
         this.checkHostPattern();
     }
 

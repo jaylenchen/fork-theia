@@ -51,6 +51,8 @@ export namespace ConsoleContextMenu {
 @injectable()
 export class ConsoleContribution implements FrontendApplicationContribution, CommandContribution, KeybindingContribution, MenuContribution {
 
+    static file = "packages/console/src/browser/console-contribution.ts"
+
     @inject(ConsoleManager)
     protected readonly manager: ConsoleManager;
 

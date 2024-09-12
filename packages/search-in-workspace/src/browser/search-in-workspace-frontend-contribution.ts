@@ -126,6 +126,8 @@ export class SearchInWorkspaceFrontendContribution extends AbstractViewContribut
     TabBarToolbarContribution,
     StylingParticipant {
 
+    static file = "packages/search-in-workspace/src/browser/search-in-workspace-frontend-contribution.ts"
+
     @inject(SelectionService) protected readonly selectionService: SelectionService;
     @inject(LabelProvider) protected readonly labelProvider: LabelProvider;
     @inject(WorkspaceService) protected readonly workspaceService: WorkspaceService;

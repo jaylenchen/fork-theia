@@ -27,6 +27,8 @@ export const EDITOR_LINENUMBER_CONTEXT_MENU: MenuPath = ['editor_linenumber_cont
 @injectable()
 export class EditorLineNumberContribution implements FrontendApplicationContribution {
 
+    static file = "packages/editor/src/browser/editor-linenumber-contribution.ts"
+
     @inject(ContextKeyService)
     protected readonly contextKeyService: ContextKeyService;
 

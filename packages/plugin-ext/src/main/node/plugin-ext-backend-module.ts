@@ -81,10 +81,15 @@ export function bindMainBackend(bind: interfaces.Bind, unbind: interfaces.Unbind
         )
     ).inSingletonScope();
 
-    bind(ConnectionHandler).toDynamicValue(ctx =>
-        new RpcConnectionHandler(pluginServerJsonRpcPath, () =>
-            ctx.container.get(PluginServer)
-        )
+    bind(ConnectionHandler).toDynamicValue(ctx => {
+        console.log(`\x1b[1;4;30;42m%s\x1b[0m`, ` plugin-ext-backend-module中bind时[path:${pluginServerJsonRpcPath}]的RpcConnectionHandler  `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/main/node/plugin-ext-backend-module.ts:85]\n`)
+
+        return new RpcConnectionHandler(pluginServerJsonRpcPath, () => {
+            console.log(`\x1b[1;4;30;42m%s\x1b[0m`, ` plugin-ext-backend-module中定义PluginServerHandler实例来处理前端发送过来的[path:${pluginServerJsonRpcPath}]rpc请求  `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/main/node/plugin-ext-backend-module.ts:88]\n`)
+
+            return ctx.container.get(PluginServer)
+        })
+    }
     ).inSingletonScope();
 
     bind(PluginCliContribution).toSelf().inSingletonScope();

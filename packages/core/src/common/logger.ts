@@ -311,8 +311,9 @@ export class Logger implements ILogger {
     protected getLog(logLevel: number): Promise<Log> {
         return this.ifEnabled(logLevel).then(() =>
             this.created.then(() =>
-                (message: any, ...params: any[]) =>
-                    this.server.log(this.name, logLevel, this.format(message), params.map(p => this.format(p)))
+                (message: any, ...params: any[]) => {
+                    return this.server.log(this.name, logLevel, this.format(message), params.map(p => this.format(p)))
+                }
             )
         );
     }

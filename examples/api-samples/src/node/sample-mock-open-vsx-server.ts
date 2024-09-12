@@ -35,6 +35,8 @@ type VersionedId = `${string}.${string}@${string}`;
 @injectable()
 export class SampleMockOpenVsxServer implements BackendApplicationContribution {
 
+    static file = "/Users/work/Third-Projects/theia/examples/api-samples/src/node/sample-mock-open-vsx-server.ts"
+
     @inject(SampleAppInfo)
     protected appInfo: SampleAppInfo;
 
@@ -57,6 +59,8 @@ export class SampleMockOpenVsxServer implements BackendApplicationContribution {
     }
 
     async onStart?(server: http.Server | https.Server): Promise<void> {
+        console.log(`\x1b[1;4;35m%s\x1b[0m`, `\n###[调用BackendApplication Contribution onStart启动] SampleMockOpenVsxServer `, ` [/Users/work/Third-Projects/theia/examples/api-samples/src/node/sample-mock-open-vsx-server.ts:62]`);
+
         const selfOrigin = await this.appInfo.getSelfOrigin();
         const baseUrl = `${selfOrigin}${this.mockServerPath}`;
         const pluginsDb = await this.findMockPlugins(this.pluginsDbPath, baseUrl);

@@ -53,12 +53,21 @@ export function bindLogger(bind: interfaces.Bind, props?: {
  * IMPORTANT: don't use in tests, since it overrides console
  */
 export const loggerBackendModule = new ContainerModule(bind => {
-    bind(BackendApplicationContribution).toDynamicValue(ctx =>
-    ({
-        initialize(): void {
-            setRootLogger(ctx.container.get<ILogger>(ILogger));
+    bind(BackendApplicationContribution).toDynamicValue(ctx => {
+
+        class MyLogger {
+            static file = "/Users/work/Third-Projects/theia/packages/core/src/node/logger-backend-module.ts"
+            initialize(): void {
+                console.log(`\x1b[1;4;35m%s\x1b[0m`, `\n###[调用BackendApplicaton8个实现了initialize方法的Contribution的initialize方法进行初始化 ]\n###[初始化BackendApplication Contribution] MyLogger `, ` [/Users/work/Third-Projects/theia/packages/core/src/node/logger-backend-module.ts:61]`);
+
+                setRootLogger(ctx.container.get<ILogger>(ILogger));
+            }
         }
-    }));
+
+        const logger = new MyLogger();
+
+        return logger
+    });
 
     bind(DispatchingLoggerClient).toSelf().inSingletonScope();
     bindLogger(bind, {

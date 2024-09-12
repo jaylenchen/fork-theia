@@ -22,6 +22,9 @@ import { WebviewWidget } from './webview';
 
 @injectable()
 export class WebviewSecondaryWindowSupport implements FrontendApplicationContribution {
+
+    static file = "packages/plugin-ext/src/main/browser/webview/webview-secondary-window-support.ts"
+
     @inject(SecondaryWindowHandler)
     protected readonly secondaryWindowHandler: SecondaryWindowHandler;
 

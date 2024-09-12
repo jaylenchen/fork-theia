@@ -36,6 +36,8 @@ import { OnigasmProvider, TextmateRegistryFactory } from './monaco-theme-types';
 @injectable()
 export class MonacoTextmateService implements FrontendApplicationContribution {
 
+    static file = "packages/monaco/src/browser/textmate/monaco-textmate-service.ts"
+
     protected readonly tokenizerOption: TokenizerOption = {
         lineLimit: 400
     };

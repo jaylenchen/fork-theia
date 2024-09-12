@@ -39,6 +39,8 @@ export interface VSCodeNlsConfig {
 @injectable()
 export class HostedPluginLocalizationService implements BackendApplicationContribution {
 
+    static file = "/Users/work/Third-Projects/theia/packages/plugin-ext/src/hosted/node/hosted-plugin-localization-service.ts"
+
     @inject(LocalizationProvider)
     protected readonly localizationProvider: LocalizationProvider;
 
@@ -60,6 +62,8 @@ export class HostedPluginLocalizationService implements BackendApplicationContri
     ready = this._ready.promise;
 
     initialize(): MaybePromise<void> {
+        console.log(`\x1b[1;4;35m%s\x1b[0m`, `\n###[调用BackendApplicaton8个实现了initialize方法的Contribution的initialize方法进行初始化 ]\n###[初始化BackendApplication Contribution] HostedPluginLocalizationService `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/hosted/node/hosted-plugin-localization-service.ts:65]`);
+
         this.getLocalizationCacheDir()
             .then(cacheDir => fs.emptyDir(cacheDir))
             .then(() => this._ready.resolve());

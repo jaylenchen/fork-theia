@@ -3,7 +3,7 @@
   "include": [],
   "compilerOptions": {
     "composite": true
-  },
+  }, 
   "references": [
     {
       "path": "../../dev-packages/cli"

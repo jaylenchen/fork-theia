@@ -31,6 +31,8 @@ export class PluginServerHandler implements PluginServer {
     protected readonly pluginsKeyValueStorage: PluginsKeyValueStorage;
 
     async deploy(pluginEntry: string, arg2?: PluginType | CancellationToken, options?: PluginDeployOptions): Promise<void> {
+        console.log(`\x1b[1;3;30;44m%s\x1b[0m`, ` 🚀 ~ 调用PluginServerHandler 部署插件 ${pluginEntry}`, `[/Users/work/Third-Projects/theia/packages/plugin-ext/src/main/node/plugin-server-handler.ts:34]`);
+
         const type = typeof arg2 === 'number' ? arg2 as PluginType : undefined;
         const successfulDeployments = await this.doDeploy({
             id: pluginEntry,
@@ -43,6 +45,10 @@ export class PluginServerHandler implements PluginServer {
     }
 
     protected doDeploy(pluginEntry: UnresolvedPluginEntry, options?: PluginDeployOptions): Promise<number> {
+        console.log(`\x1b[1;3;30;44m%s\x1b[0m`, `\n#########在服务端上调用PluginServerHandler deploy处理发送过来的plugin deploy的rpc 请求 `,
+            `[/Users/work/Third-Projects/theia/packages/plugin-ext/src/main/node/plugin-server-handler.ts:49]`,
+            `\nPluginServerHandler deploy实际的作用就是转发给PluginDeployerImpl deploy处理该rpc请求\n`
+        );
         return this.pluginDeployer.deploy(pluginEntry, options);
     }
 

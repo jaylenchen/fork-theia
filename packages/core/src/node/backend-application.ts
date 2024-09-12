@@ -192,17 +192,29 @@ export class BackendApplication {
     }
 
     protected async initialize(): Promise<void> {
-        await Promise.all(this.contributionsProvider.getContributions().map(async contribution => {
+        // =======================constribution initialize start============================
+        const contributions = this.contributionsProvider.getContributions()
+
+        console.log(`\x1b[1;3;30;44m%s\x1b[0m`, `\n 调用BackendApplicaton${contributions.filter(c => c.initialize).length}个实现了initialize方法的Contribution的initialize方法进行初始化 `, ` [/Users/work/Third-Projects/theia/packages/core/src/node/backend-application.ts:197]`);
+        console.table(contributions.filter(c => c.initialize).map(contribution => {
+            const Contribution = contribution.constructor as any
+            return {
+                "BackendApplicaton Contribution": Contribution.name,
+                File: Contribution.file,
+            }
+        }))
+
+        await Promise.all(contributions.map(async contribution => {
             if (contribution.initialize) {
                 try {
-                    await this.measure(contribution.constructor.name + '.initialize',
-                        () => contribution.initialize!()
-                    );
+                    contribution.initialize!()
                 } catch (error) {
                     console.error('Could not initialize contribution', error);
                 }
             }
         }));
+        // =======================constribution initialize end============================
+
     }
 
     get configured(): Promise<void> {
@@ -211,10 +223,39 @@ export class BackendApplication {
 
     @postConstruct()
     protected init(): void {
+
+        const contributions = this.contributionsProvider.getContributions()
+
+        console.log(`\x1b[1;3;30;43m%s\x1b[0m`, `\n BackendApplicaton当前有${contributions.length}个可用的Contribution `, ` [/Users/work/Third-Projects/theia/packages/core/src/node/backend-application.ts:226]\n`);
+        console.table(contributions.map(contribution => {
+            const Contribution = contribution.constructor as any
+            const methods = [];
+            if (Contribution.prototype.initialize) methods.push('initialize');
+            if (Contribution.prototype.configure) methods.push('configure');
+            if (Contribution.prototype.onStart) methods.push('onStart');
+            return {
+                "BackendApplicaton Contribution": Contribution.name,
+                File: Contribution.file,
+                Method: methods.join(" | ")
+            }
+        }).sort((a, b) => {
+            if (a.Method === '' && b.Method === '') return 0;
+            if (a.Method === '') return 1;
+            if (b.Method === '') return -1;
+            const order = ['initialize', 'configure', 'onStart'];
+            const aIndex = order.indexOf(a.Method.split(' | ')[0]);
+            const bIndex = order.indexOf(b.Method.split(' | ')[0]);
+            return aIndex - bIndex;
+        }))
+
+        console.log(`\x1b[1;3;30;44m%s\x1b[0m`, `\n 调用BackendApplicaton的init方法进行初始化 `, `[调用时机：ioc容器获取后端实例的时候借助postConstruct装饰器。]`, ` [/Users/work/Third-Projects/theia/packages/core/src/node/backend-application.ts:243]\n`, `BackendApplication初始化的主要逻辑其实就是找到所有具有initialize方法的Contribution将该方法调用\n`);
+
         this._configured = this.configure();
     }
 
     protected async configure(): Promise<void> {
+        const contributions = this.contributionsProvider.getContributions()
+
         await this.initialize();
 
         this.app.get('*.js', this.serveGzipped.bind(this, 'text/javascript'));
@@ -229,16 +270,28 @@ export class BackendApplication {
         this.app.get('*.woff', this.serveGzipped.bind(this, 'font/woff'));
         this.app.get('*.woff2', this.serveGzipped.bind(this, 'font/woff2'));
 
-        await Promise.all(this.contributionsProvider.getContributions().map(async contribution => {
+        // =======================constribution configure start============================
+        console.log(`\x1b[1;3;30;44m%s\x1b[0m`, `\n [配置]BackendApplicaton${contributions.filter(c => c.configure).length}个实现了configure方法的Contribution `, ` [/Users/work/Third-Projects/theia/packages/core/src/node/backend-application.ts:254]`);
+        console.table(contributions.filter(c => c.configure).map(contribution => {
+            const Contribution = contribution.constructor as any
+            return {
+                "BackendApplicaton Contribution": Contribution.name,
+                File: Contribution.file,
+            }
+        }))
+
+        await Promise.all(contributions.map(async contribution => {
             if (contribution.configure) {
                 try {
                     await contribution.configure!(this.app);
                 } catch (error) {
-                    console.error('Could not configure contribution', error);
+                    // console.error('Could not configure contribution', error);
                 }
             }
         }));
         console.info('configured all backend app contributions');
+        // =======================constribution configure end============================
+
     }
 
     use(...handlers: express.Handler[]): void {
@@ -246,6 +299,8 @@ export class BackendApplication {
     }
 
     async start(port?: number, hostname?: string): Promise<http.Server | https.Server> {
+        console.log(`\x1b[1;3;30;44m%s\x1b[0m`, `\n [启动]BackendApplicaton `, ` [/Users/work/Third-Projects/theia/packages/core/src/node/backend-application.ts:283]\n`);
+
         hostname ??= this.cliParams.hostname;
         port ??= this.cliParams.port;
 
@@ -293,6 +348,7 @@ export class BackendApplication {
             setTimeout(process.exit, 0, 1);
         });
 
+        // 启动后端服务
         server.listen(port, hostname, () => {
             // address should be defined at this point
             const address = server.address()!;
@@ -304,7 +360,19 @@ export class BackendApplication {
         /* Allow any number of websocket servers.  */
         server.setMaxListeners(0);
 
-        for (const contribution of this.contributionsProvider.getContributions()) {
+        // =======================constribution onStart start============================
+        const contributions = this.contributionsProvider.getContributions()
+
+        console.log(`\x1b[1;3;30;44m%s\x1b[0m`, `\n [启动]BackendApplicaton实现了onStart方法的Contribution[${contributions.filter(c => c.onStart).length}个] `, ` [/Users/work/Third-Projects/theia/packages/core/src/node/backend-application.ts:342]`);
+        console.table(contributions.filter(c => c.onStart).map(contribution => {
+            const Contribution = contribution.constructor as any
+            return {
+                "BackendApplicaton Contribution": Contribution.name,
+                File: Contribution.file,
+            }
+        }))
+
+        for (const contribution of contributions) {
             if (contribution.onStart) {
                 try {
                     await this.measure(contribution.constructor.name + '.onStart',
@@ -315,6 +383,8 @@ export class BackendApplication {
                 }
             }
         }
+        // =======================constribution onStart end============================
+
         return this.stopwatch.startAsync('server', 'Finished starting backend application', () => deferred.promise);
     }
 

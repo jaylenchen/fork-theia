@@ -24,6 +24,9 @@ import { OpenEditorsWidget } from './open-editors-widget/navigator-open-editors-
 
 @injectable()
 export class NavigatorTabBarDecorator implements TabBarDecorator, FrontendApplicationContribution {
+
+    static file = "packages/navigator/src/browser/navigator-tab-bar-decorator.ts"
+
     readonly id = 'theia-navigator-tabbar-decorator';
     protected applicationShell: ApplicationShell;
 

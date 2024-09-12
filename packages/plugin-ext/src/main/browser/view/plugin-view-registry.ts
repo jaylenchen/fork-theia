@@ -65,6 +65,8 @@ export interface ViewContainerInfo {
 @injectable()
 export class PluginViewRegistry implements FrontendApplicationContribution {
 
+    static file = "packages/plugin-ext/src/main/browser/view/plugin-view-registry.ts"
+
     @inject(ApplicationShell)
     protected readonly shell: ApplicationShell;
 

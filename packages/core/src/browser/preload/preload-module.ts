@@ -25,6 +25,9 @@ import { WebSocketConnectionProvider } from '../messaging/ws-connection-provider
 import { OSBackendProvider, OSBackendProviderPath } from '../../common/os';
 
 export default new ContainerModule(bind => {
+
+    console.log(`\x1b[1;3;30;43m%s\x1b[0m`, `\n ==========>load preload-module `, ` [/Users/work/Third-Projects/theia/packages/core/src/browser/preload/preload-module.ts:29]`);
+
     bind(Preloader).toSelf().inSingletonScope();
     bindContributionProvider(bind, PreloadContribution);
 

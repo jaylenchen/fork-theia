@@ -20,6 +20,9 @@ import { OutputChannelManager, OutputChannelSeverity } from '@theia/output/lib/b
 @injectable()
 export class SampleOutputChannelWithSeverity
     implements FrontendApplicationContribution {
+
+    static file = "examples/api-samples/src/browser/output/sample-output-channel-with-severity.ts"
+
     @inject(OutputChannelManager)
     protected readonly outputChannelManager: OutputChannelManager;
     public onStart(): void {

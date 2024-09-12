@@ -61,6 +61,8 @@ export namespace ProblemsCommands {
 @injectable()
 export class ProblemContribution extends AbstractViewContribution<ProblemWidget> implements FrontendApplicationContribution, TabBarToolbarContribution {
 
+    static file = "packages/markers/src/browser/problem/problem-contribution.ts"
+
     @inject(ProblemManager) protected readonly problemManager: ProblemManager;
     @inject(StatusBar) protected readonly statusBar: StatusBar;
     @inject(SelectionService) protected readonly selectionService: SelectionService;

@@ -115,6 +115,9 @@ const TASKS_STORAGE_KEY = 'tasks';
 
 @injectable()
 export class TaskFrontendContribution implements CommandContribution, MenuContribution, KeybindingContribution, FrontendApplicationContribution, QuickAccessContribution {
+
+    static file = "packages/task/src/browser/task-frontend-contribution.ts"
+
     @inject(QuickOpenTask)
     protected readonly quickOpenTask: QuickOpenTask;
 

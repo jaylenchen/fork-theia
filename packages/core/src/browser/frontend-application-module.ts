@@ -151,6 +151,11 @@ export const frontendApplicationModule = new ContainerModule((bind, _unbind, _is
     bind(NoneIconTheme).toSelf().inSingletonScope();
     bind(LabelProviderContribution).toService(NoneIconTheme);
     bind(IconThemeService).toSelf().inSingletonScope();
+    // theia对于contributions的获取，是通过ContributionProvider来获取的
+    // 这个函数最终就是通过指定一个代表一组contributions的id，先通过这个id获取到对应的contributionProvider
+    // 然后通过这个id在container中寻找到对应的一组contribution，它实际上就是inversify的multiInject装饰器的作用
+    // 估计是因为老版本的inversify没有multiInject，所以theia自己实现了这个功能来达到给定一个id获取一组contribution的目的
+    // 即@multiInject(BAR) args: Bar[]
     bindContributionProvider(bind, IconThemeContribution);
     bind(DefaultFileIconThemeContribution).toSelf().inSingletonScope();
     bind(IconThemeContribution).toService(DefaultFileIconThemeContribution);

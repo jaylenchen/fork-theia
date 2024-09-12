@@ -25,10 +25,14 @@ import * as path from 'path';
 @injectable()
 export class VsxCliDeployerParticipant implements PluginDeployerParticipant {
 
+    static file = "/Users/work/Third-Projects/theia/packages/vsx-registry/src/node/vsx-cli-deployer-participant.ts"
+
     @inject(VsxCli)
     protected readonly vsxCli: VsxCli;
 
     async onWillStart(context: PluginDeployerStartContext): Promise<void> {
+        console.log(`\x1b[1;4;35m%s\x1b[0m`, `\n######[初始化PluginDeployerContribution阶段]\n######[初始化PluginDeployerParticipant几个实现了onWillStart方法的Contribution]\n######[调用VsxCliDeployerParticipant的onWillStart方法] `, ` [/Users/work/Third-Projects/theia/packages/vsx-registry/src/node/vsx-cli-deployer-participant.ts:34]`, `\n\n`);
+
         const pluginUris = await Promise.all(this.vsxCli.pluginsToInstall.map(async id => {
             try {
                 const resolvedPath = path.resolve(id);
@@ -41,6 +45,8 @@ export class VsxCliDeployerParticipant implements PluginDeployerParticipant {
             }
             return VSXExtensionUri.fromVersionedId(id).toString();
         }));
-        context.userEntries.push(...pluginUris);
+        //  []
+        const entries = pluginUris
+        context.userEntries.push(...entries);
     }
 }

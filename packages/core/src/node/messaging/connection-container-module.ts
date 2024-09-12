@@ -74,6 +74,8 @@ export const ConnectionContainerModule: symbol & { create(callback: ConnectionCo
     create(callback: ConnectionContainerModuleCallBack): ContainerModule {
         return new ContainerModule((bind, unbind, isBound, rebind) => {
             const bindFrontendService: BindFrontendService = (path, serviceIdentifier) => {
+                console.log(`\x1b[1;4;30;42m%s\x1b[0m`, ` connection-container-module bindFrontendService时创建了RpcProxyFactory  `, ` [/Users/work/Third-Projects/theia/packages/core/src/node/messaging/connection-container-module.ts:77]\n`)
+
                 const serviceFactory = new RpcProxyFactory();
                 const service = serviceFactory.createProxy();
                 bind<ConnectionHandler>(ConnectionHandler).toConstantValue({

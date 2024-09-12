@@ -44,7 +44,9 @@ export class HostedPluginDeployerHandler implements PluginDeployerHandler {
 
     @inject(PluginUninstallationManager)
     protected readonly uninstallationManager: PluginUninstallationManager;
-
+    /**
+     * 一个用来存储插件Id及其部署位置的字典
+     */
     private readonly deployedLocations = new Map<PluginIdentifiers.VersionedId, Set<string>>();
     protected readonly sourceLocations = new Map<PluginIdentifiers.VersionedId, Set<string>>();
 
@@ -111,12 +113,15 @@ export class HostedPluginDeployerHandler implements PluginDeployerHandler {
      * @throws never! in order to isolate plugin deployment
      */
     async getPluginDependencies(entry: PluginDeployerEntry): Promise<PluginDependencies | undefined> {
+        // 比如/Users/work/.theia/deployedPlugins/christian-kohler.npm-intellisense-1.4.5/extension目录
         const pluginPath = entry.path();
         try {
+            // 读取这个插件所在npm包的package.json的信息并添加一些新的信息
             const manifest = await this.reader.readPackage(pluginPath);
             if (!manifest) {
                 return undefined;
             }
+            // 基于manifest数据读取这个插件的元数据信息
             const metadata = this.reader.readMetadata(manifest);
             const dependencies: PluginDependencies = { metadata };
             // Do not resolve system (aka builtin) plugins because it should be done statically at build time.
@@ -131,6 +136,14 @@ export class HostedPluginDeployerHandler implements PluginDeployerHandler {
     }
 
     async deployFrontendPlugins(frontendPlugins: PluginDeployerEntry[]): Promise<number> {
+        // =======frontendPlugins=========
+        console.log(`\x1b[1;4;30;42m%s\x1b[0m`, `\n######[调用HostedPluginDeployerHandler deployFrontendPlugins方法部署所有前端插件] `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/hosted/node/hosted-plugin-deployer-handler.ts:134]`);
+        console.log(`\x1b[1;3;30;43m%s\x1b[0m`, `\n frontendPlugins plugins有${frontendPlugins.length}个 `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/hosted/node/hosted-plugin-deployer-handler.ts:136]\n`);
+        console.table(frontendPlugins.map((plugin) => ({
+            id: plugin.id(),
+            path: plugin.path(),
+        })))
+
         let successes = 0;
         for (const plugin of frontendPlugins) {
             if (await this.deployPlugin(plugin, 'frontend')) { successes++; }
@@ -141,6 +154,14 @@ export class HostedPluginDeployerHandler implements PluginDeployerHandler {
     }
 
     async deployBackendPlugins(backendPlugins: PluginDeployerEntry[]): Promise<number> {
+        // =======backendPlugins=========
+        console.log(`\x1b[1;4;30;42m%s\x1b[0m`, `\n######[调用HostedPluginDeployerHandler deployBackendPlugins方法部署所有后端插件] `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/hosted/node/hosted-plugin-deployer-handler.ts:152]`);
+        console.log(`\x1b[1;3;30;43m%s\x1b[0m`, `\n backendPlugins有${backendPlugins.length}个 `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/hosted/node/hosted-plugin-deployer-handler.ts:154]\n`);
+        console.table(backendPlugins.map((plugin) => ({
+            id: plugin.id(),
+            path: plugin.path(),
+        })))
+
         let successes = 0;
         for (const plugin of backendPlugins) {
             if (await this.deployPlugin(plugin, 'backend')) { successes++; }
@@ -157,22 +178,25 @@ export class HostedPluginDeployerHandler implements PluginDeployerHandler {
      * @returns whether the plugin is deployed after running this function. If the plugin was already installed, will still return `true`.
      */
     protected async deployPlugin(entry: PluginDeployerEntry, entryPoint: keyof PluginEntryPoint): Promise<boolean> {
+        // 插件所在的本地磁盘路径
+        // 比如：'/Users/work/.theia/deployedPlugins/christian-kohler.npm-intellisense-1.4.5/extension'
         const pluginPath = entry.path();
         const deployPlugin = this.stopwatch.start('deployPlugin');
         let id;
         let success = true;
         try {
+            // 读取这个插件所在npm包的package.json的信息并添加一些新的信息
             const manifest = await this.reader.readPackage(pluginPath);
             if (!manifest) {
                 deployPlugin.error(`Failed to read ${entryPoint} plugin manifest from '${pluginPath}''`);
                 return success = false;
             }
-
+            // 基于manifest获取插件的元数据信息
             const metadata = this.reader.readMetadata(manifest);
             metadata.isUnderDevelopment = entry.getValue('isUnderDevelopment') ?? false;
 
             id = PluginIdentifiers.componentsToVersionedId(metadata.model);
-
+            // 一个用来存储当前插件部署位置的Set，即一个插件Id可能对应多个部署位置
             const deployedLocations = this.deployedLocations.get(id) ?? new Set<string>();
             deployedLocations.add(entry.rootPath);
             this.deployedLocations.set(id, deployedLocations);
@@ -185,6 +209,7 @@ export class HostedPluginDeployerHandler implements PluginDeployerHandler {
             }
 
             const { type } = entry;
+        
             const deployed: DeployedPlugin = { metadata, type };
             deployed.contributes = await this.reader.readContribution(manifest);
             await this.localizationService.deployLocalizations(deployed);

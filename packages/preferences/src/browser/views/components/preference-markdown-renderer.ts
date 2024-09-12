@@ -58,7 +58,7 @@ export class PreferenceMarkdownRenderer {
                     }
                     return `<a title="${preferenceId}" href="preference:${preferenceId}">${name}</a>`;
                 } else {
-                    console.warn(`Linked preference "${preferenceId}" not found.`);
+                    // console.warn(`Linked preference "${preferenceId}" not found.`);
                 }
             }
             return inlineCode ? inlineCode(tokens, idx, options, env, self) : '';

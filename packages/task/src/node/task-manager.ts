@@ -27,6 +27,7 @@ import { ManagedTaskManager } from '../common';
 @injectable()
 export class TaskManager implements BackendApplicationContribution, ManagedTaskManager<Task> {
 
+    static file = "/Users/work/Third-Projects/theia/packages/task/src/node/task-manager.ts"
     /** contains all running tasks */
     protected readonly tasks: Map<number, Task> = new Map();
     /** contains running tasks per context */

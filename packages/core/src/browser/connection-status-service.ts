@@ -172,6 +172,8 @@ export class FrontendConnectionStatusService extends AbstractConnectionStatusSer
 @injectable()
 export class ApplicationConnectionStatusContribution extends DefaultFrontendApplicationContribution {
 
+    static file = "packages/core/src/browser/connection-status-service.ts"
+
     protected readonly toDisposeOnOnline = new DisposableCollection();
 
     constructor(

@@ -63,6 +63,9 @@ export class ProblemDecorationsProvider implements DecorationsProvider {
 
 @injectable()
 export class ProblemDecorationContribution implements FrontendApplicationContribution {
+
+    static file = "packages/markers/src/browser/problem/problem-decorations-provider.ts"
+
     @inject(DecorationsService) protected readonly decorationsService: DecorationsService;
     @inject(ProblemDecorationsProvider) protected readonly problemDecorationProvider: ProblemDecorationsProvider;
 

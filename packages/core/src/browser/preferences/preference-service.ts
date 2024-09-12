@@ -277,6 +277,8 @@ export type PreferenceProviderProvider = (scope: PreferenceScope, uri?: URI) => 
 @injectable()
 export class PreferenceServiceImpl implements PreferenceService {
 
+    static file = "packages/core/src/browser/preferences/preference-service.ts"
+
     protected readonly onPreferenceChangedEmitter = new Emitter<PreferenceChange>();
     readonly onPreferenceChanged = this.onPreferenceChangedEmitter.event;
 

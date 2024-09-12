@@ -150,10 +150,13 @@ export class HostedPluginProcess implements ServerPluginRunner {
     }
 
     public runPluginServer(serverName?: string): void {
+        console.log(`\x1b[1;3;30;42m%s\x1b[0m`, `\n ==========>==========>node启动plugin server[调用HostedPluginProcess runPluginServer] `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/hosted/node/hosted-plugin-process.ts:153]`);
+
         if (this.childProcess) {
             this.terminatePluginServer();
         }
         this.terminatingPluginServer = false;
+        // 在这个位置会fork出host子进程
         this.childProcess = this.fork({
             serverName: serverName ?? 'hosted-plugin',
             logger: this.logger,
@@ -201,6 +204,10 @@ export class HostedPluginProcess implements ServerPluginRunner {
             forkOptions.execArgv = ['--nolazy', `--inspect${inspectArg.substring(inspectArgPrefix.length)}`];
         }
 
+
+        console.log(`\x1b[1;3;30;42m%s\x1b[0m`, `\n ==========>==========>node创建出plugin host子进程[调用HostedPluginProcess fork] `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext/src/hosted/node/hosted-plugin-process.ts:207]`, `\n内部其实是使用了cp.fork(/Users/work/Third-Projects/theia/packages/plugin-ext/src/hosted/node/plugin-host.ts)创建出plugin进程\n`);
+        // this.configuration.path: '/Users/work/Third-Projects/theia/examples/browser/lib/backend/plugin-host'
+        // 实际源码位置：/Users/work/Third-Projects/theia/packages/plugin-ext/src/hosted/node/plugin-host.ts
         const childProcess = cp.fork(this.configuration.path, options.args, forkOptions);
         childProcess.stdout!.on('data', data => this.logger.info(`[${options.serverName}: ${childProcess.pid}] ${data.toString().trim()}`));
         childProcess.stderr!.on('data', data => this.logger.error(`[${options.serverName}: ${childProcess.pid}] ${data.toString().trim()}`));

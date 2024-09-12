@@ -22,6 +22,8 @@ import { QuickAccessContribution } from './quick-access';
 @injectable()
 export class QuickInputFrontendContribution implements FrontendApplicationContribution {
 
+    static file = "packages/core/src/browser/quick-input/quick-input-frontend-contribution.ts"
+
     @inject(ContributionProvider) @named(QuickAccessContribution)
     protected readonly contributionProvider: ContributionProvider<QuickAccessContribution>;
 

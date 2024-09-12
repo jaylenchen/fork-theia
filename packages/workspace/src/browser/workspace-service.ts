@@ -174,9 +174,11 @@ export class WorkspaceService implements FrontendApplicationContribution {
     get roots(): Promise<FileStat[]> {
         return this.deferredRoots.promise;
     }
+
     tryGetRoots(): FileStat[] {
         return this._roots;
     }
+    
     get workspace(): FileStat | undefined {
         return this._workspace;
     }

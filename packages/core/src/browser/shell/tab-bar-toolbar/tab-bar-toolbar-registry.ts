@@ -48,6 +48,8 @@ const menuDelegateSeparator = '=@=';
 @injectable()
 export class TabBarToolbarRegistry implements FrontendApplicationContribution {
 
+    static file = "packages/core/src/browser/shell/tab-bar-toolbar/tab-bar-toolbar-registry.ts"
+
     protected items = new Map<string, TabBarToolbarItem | ReactTabBarToolbarItem>();
     protected menuDelegates = new Map<string, MenuDelegate>();
 

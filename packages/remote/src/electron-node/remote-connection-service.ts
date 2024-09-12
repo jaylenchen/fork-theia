@@ -24,6 +24,8 @@ import { RemoteSetupService } from './setup/remote-setup-service';
 @injectable()
 export class RemoteConnectionService implements BackendApplicationContribution {
 
+    static file = "/Users/work/Third-Projects/theia/packages/remote/src/electron-node/remote-connection-service.ts"
+
     @inject(RemoteCopyService)
     protected readonly copyService: RemoteCopyService;
 

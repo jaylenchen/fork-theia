@@ -23,6 +23,7 @@ import { SampleAppInfo } from '../common/vsx/sample-app-info';
 
 @injectable()
 export class SampleBackendAppInfo implements SampleAppInfo, BackendApplicationContribution {
+    static file = "/Users/work/Third-Projects/theia/examples/api-samples/src/node/sample-backend-app-info.ts"
 
     protected addressDeferred = new Deferred<net.AddressInfo>();
 
@@ -30,6 +31,8 @@ export class SampleBackendAppInfo implements SampleAppInfo, BackendApplicationCo
     protected backendCli: BackendApplicationCliContribution;
 
     onStart(server: net.Server): void {
+        console.log(`\x1b[1;4;35m%s\x1b[0m`, `\n###[调用BackendApplication Contribution onStart启动] SampleBackendAppInfo `, ` [/Users/work/Third-Projects/theia/examples/api-samples/src/node/sample-backend-app-info.ts:34]`);
+
         const address = server.address();
         // eslint-disable-next-line no-null/no-null
         if (typeof address === 'object' && address !== null) {

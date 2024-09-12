@@ -29,6 +29,8 @@ export interface IconThemeContribution {
 @injectable()
 export class IconThemeApplicationContribution implements FrontendApplicationContribution {
 
+    static file = "packages/core/src/browser/icon-theme-contribution.ts"
+
     @inject(IconThemeService)
     protected readonly iconThemes: IconThemeService;
 

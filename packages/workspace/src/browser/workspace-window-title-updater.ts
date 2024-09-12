@@ -23,6 +23,8 @@ import { Navigatable } from '@theia/core/lib/browser/navigatable';
 @injectable()
 export class WorkspaceWindowTitleUpdater extends WindowTitleUpdater {
 
+    static file = "packages/workspace/src/browser/workspace-window-title-updater.ts"
+
     @inject(WorkspaceService) protected readonly workspaceService: WorkspaceService;
 
     protected override updateTitleWidget(widget?: Widget): void {

@@ -26,6 +26,8 @@ import { BinaryBuffer } from '@theia/core/lib/common/buffer';
 @injectable()
 export class FilesystemSaveableService extends SaveableService {
 
+    static file = "packages/filesystem/src/browser/filesystem-saveable-service.ts"
+
     @inject(MessageService)
     protected readonly messageService: MessageService;
     @inject(FileService)

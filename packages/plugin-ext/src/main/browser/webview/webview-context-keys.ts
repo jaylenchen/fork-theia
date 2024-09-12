@@ -23,6 +23,8 @@ import { WebviewWidget } from './webview';
 @injectable()
 export class WebviewContextKeys {
 
+    static file = "packages/plugin-ext/src/main/browser/webview/webview-context-keys.ts"
+
     /**
      * Context key representing the `viewType` of the active `WebviewWidget`, if any.
      */

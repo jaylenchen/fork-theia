@@ -28,6 +28,9 @@ import { ResourceEdit } from '@theia/monaco-editor-core/esm/vs/editor/browser/se
 
 @injectable()
 export class BulkEditContribution extends AbstractViewContribution<BulkEditTreeWidget> implements TabBarToolbarContribution {
+
+    static file = "packages/bulk-edit/src/browser/bulk-edit-contribution.ts"
+
     private edits: ResourceEdit[];
 
     @inject(QuickViewService) @optional()

@@ -24,14 +24,21 @@ import { LocalVSIXFilePluginDeployerResolver } from './local-vsix-file-plugin-de
 @injectable()
 export class PluginVSCodeDeployerParticipant implements PluginDeployerParticipant {
 
+    static file = "/Users/work/Third-Projects/theia/packages/plugin-ext-vscode/src/node/plugin-vscode-deployer-participant.ts"
+
     @inject(PluginVSCodeEnvironment)
     protected readonly environments: PluginVSCodeEnvironment;
 
     async onWillStart(context: PluginDeployerStartContext): Promise<void> {
+        console.log(`\x1b[1;4;35m%s\x1b[0m`, `\n######[初始化PluginDeployerContribution阶段]\n######[初始化PluginDeployerParticipant几个实现了onWillStart方法的Contribution]\n######[调用PluginVSCodeDeployerParticipant的onWillStart方法] `, ` [/Users/work/Third-Projects/theia/packages/plugin-ext-vscode/src/node/plugin-vscode-deployer-participant.ts:33]`, `\n\n`);
+
         const extensionDeploymentDirUri = await this.environments.getDeploymentDirUri();
-        context.userEntries.push(extensionDeploymentDirUri.withScheme('local-dir').toString());
+        // local-dir:/Users/work/.theia/deployedPlugins
+        const entry = extensionDeploymentDirUri.withScheme('local-dir').toString()
+        context.userEntries.push(entry);
 
         const userExtensionDirUri = await this.environments.getUserExtensionsDirUri();
+        // /Users/work/.theia/extensions
         const userExtensionDirPath = FileUri.fsPath(userExtensionDirUri);
 
         if (await fs.pathExists(userExtensionDirPath)) {

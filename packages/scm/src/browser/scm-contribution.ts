@@ -130,6 +130,9 @@ export class ScmContribution extends AbstractViewContribution<ScmWidget> impleme
     ColorContribution,
     StylingParticipant {
 
+
+    static file = "packages/scm/src/browser/scm-contribution.ts"
+
     @inject(StatusBar) protected readonly statusBar: StatusBar;
     @inject(ScmService) protected readonly scmService: ScmService;
     @inject(ScmQuickOpenService) protected readonly scmQuickOpenService: ScmQuickOpenService;

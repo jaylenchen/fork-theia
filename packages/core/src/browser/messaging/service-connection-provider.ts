@@ -80,6 +80,11 @@ export class ServiceConnectionProvider {
      */
     createProxy<T extends object>(path: string, target?: object): RpcProxy<T>;
     createProxy<T extends object>(path: string, arg?: object): RpcProxy<T> {
+        console.log(`\x1b[1;3;30;42m%s\x1b[0m`, `\n==========>==========>==========>在浏览器上针对 "${path}" 创建RPC Proxy - [调用ServiceConnectionProvider createProxy]`,
+            `[/Users/work/Third-Projects/theia/packages/core/src/browser/messaging/service-connection-provider.ts:83]`,
+            `\n ServiceConnectionProvider createProxy主要是使用RpcProxyFactory创建RPC Proxy。然后监听 "${path}"，为 "${path}" 注册connection handler\n`
+        );
+
         const factory = arg instanceof RpcProxyFactory ? arg : new RpcProxyFactory<T>(arg);
         this.listen(path, (_, c) => factory.listen(c), true);
         return factory.createProxy();
@@ -133,6 +138,10 @@ export class ServiceConnectionProvider {
     }
 
     private async openChannel(path: string, handler: ServiceConnectionProvider.ConnectionHandler): Promise<void> {
+        console.log(`\x1b[1;3;30;42m%s\x1b[0m`, `\n==========>==========>==========>在浏览器上针对 "${path}" 注册 connenction handler [调用ServiceConnectionProvider openChannel]`,
+            `[/Users/work/Third-Projects/theia/packages/core/src/browser/messaging/service-connection-provider.ts:142]`,
+            `\n\n`
+        );
         await this.channelReady;
         const newChannel = await this.channelMultiplexer.open(path);
         handler(path, newChannel);

@@ -27,6 +27,8 @@ import { FileDownloadHandler } from './file-download-handler';
 @injectable()
 export class FileDownloadEndpoint implements BackendApplicationContribution {
 
+    static file = "/Users/work/Third-Projects/theia/packages/filesystem/src/node/download/file-download-endpoint.ts"
+
     protected static PATH = '/files';
 
     @inject(FileDownloadHandler)

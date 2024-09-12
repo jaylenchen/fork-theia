@@ -21,6 +21,9 @@ import { MeasurementNotificationService } from '../common';
 
 @injectable()
 export class MetricsFrontendApplicationContribution implements FrontendApplicationContribution {
+
+    static file = "packages/metrics/src/browser/metrics-frontend-application-contribution.ts"
+
     @inject(Stopwatch)
     protected stopwatch: Stopwatch;
 

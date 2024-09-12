@@ -19,6 +19,8 @@ import { bindHostedBackend } from './hosted/node/plugin-ext-hosted-backend-modul
 import { bindMainBackend } from './main/node/plugin-ext-backend-module';
 
 export default new ContainerModule((bind, unbind, isBound, rebind) => {
+    // 主插件模块
     bindMainBackend(bind, unbind, isBound, rebind);
+    // 第三方插件模块
     bindHostedBackend(bind);
 });

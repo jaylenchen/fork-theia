@@ -28,6 +28,9 @@ import { DebugAdapterContributionRegistry } from '../common/debug-adapter-contri
  */
 @injectable()
 export class DebugAdapterSessionManager implements MessagingService.Contribution {
+
+    static file = "/Users/work/Third-Projects/theia/packages/debug/src/node/debug-adapter-session-manager.ts"
+
     protected readonly sessions = new Map<string, DebugAdapterSession>();
 
     @inject(DebugAdapterSessionFactory)
@@ -37,6 +40,8 @@ export class DebugAdapterSessionManager implements MessagingService.Contribution
     protected readonly debugAdapterFactory: DebugAdapterFactory;
 
     configure(service: MessagingService): void {
+        console.log(`\x1b[1;4;35m%s\x1b[0m`, `\n######[初始化BackendApplication Contribution]\n######[调用2个DefaultMessagingService Contribution的configure方法配置]\n######[调用DebugAdapterSessionManager的configure方法] `, ` [/Users/work/Third-Projects/theia/packages/debug/src/node/debug-adapter-session-manager.ts:43]`);
+
         service.registerChannelHandler(`${DebugAdapterPath}/:id`, ({ id }: { id: string }, wsChannel) => {
             const session = this.find(id);
             if (!session) {

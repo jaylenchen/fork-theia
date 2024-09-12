@@ -63,6 +63,8 @@ export interface NavigatableWidgetMoveSnapshot {
 @injectable()
 export class FileSystemFrontendContribution implements FrontendApplicationContribution, CommandContribution {
 
+    static file = "packages/filesystem/src/browser/filesystem-frontend-contribution.ts"
+
     @inject(ApplicationShell)
     protected readonly shell: ApplicationShell;
 
@@ -113,6 +115,7 @@ export class FileSystemFrontendContribution implements FrontendApplicationContri
         }
     }
 
+    // frontend contribution
     initialize(): void {
         this.fileService.onDidFilesChange(event => this.run(() => this.updateWidgets(event)));
         this.fileService.onWillRunUserOperation(event => {
@@ -139,6 +142,7 @@ export class FileSystemFrontendContribution implements FrontendApplicationContri
                 this.updateAssociations();
             }
         });
+        
     }
 
     registerCommands(commands: CommandRegistry): void {

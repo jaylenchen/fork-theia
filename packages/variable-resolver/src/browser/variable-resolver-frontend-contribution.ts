@@ -28,6 +28,8 @@ export const LIST_VARIABLES: Command = {
 @injectable()
 export class VariableResolverFrontendContribution implements FrontendApplicationContribution, CommandContribution {
 
+    static file = "packages/variable-resolver/src/browser/variable-resolver-frontend-contribution.ts"
+
     constructor(
         @inject(ContributionProvider) @named(VariableContribution)
         protected readonly contributionProvider: ContributionProvider<VariableContribution>,

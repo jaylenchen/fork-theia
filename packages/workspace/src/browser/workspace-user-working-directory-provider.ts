@@ -23,6 +23,9 @@ import { FileService } from '@theia/filesystem/lib/browser/file-service';
 
 @injectable()
 export class WorkspaceUserWorkingDirectoryProvider extends UserWorkingDirectoryProvider {
+
+    static file = "packages/workspace/src/browser/workspace-user-working-directory-provider.ts"
+
     @inject(WorkspaceService) protected readonly workspaceService: WorkspaceService;
     @inject(FileService) protected readonly fileService: FileService;
 
