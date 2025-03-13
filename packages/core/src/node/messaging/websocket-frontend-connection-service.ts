@@ -157,6 +157,7 @@ class ReconnectableSocketChannel extends AbstractChannel {
             // In the browser context socketIO receives binary messages as ArrayBuffers.
             // So we have to convert them to a Uint8Array before delegating the message to the read buffer.
             const buffer = data instanceof ArrayBuffer ? new Uint8Array(data) : data;
+            console.log("🚀 ~ ReconnectableSocketChannel ~ dataListener ~ buffer:", buffer.toString())
             this.onMessageEmitter.fire(() => new Uint8ArrayReadBuffer(buffer));
         };
         this.disposables.push(Disposable.create(() => {

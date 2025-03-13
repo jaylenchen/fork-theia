@@ -96,7 +96,7 @@ export class PluginDeployerImpl implements PluginDeployer {
 
         // init resolvers
         await this.initResolvers();
-
+        //=====================步骤1: 检测plugin部署位置================
         // check THEIA_DEFAULT_PLUGINS or THEIA_PLUGINS env var
         const defaultPluginsValue = process.env.THEIA_DEFAULT_PLUGINS || undefined;
         const pluginsValue = process.env.THEIA_PLUGINS || undefined;
@@ -115,6 +115,10 @@ export class PluginDeployerImpl implements PluginDeployer {
         const userEntries: string[] = [];
         const context: PluginDeployerStartContext = { userEntries, systemEntries };
 
+        /**
+         * 借助deployer participants填充context（即plugin部署到宿主本地所在位置的集合）
+         * 查看了几个participant主要就是填充context.userEntries
+         */
         for (const contribution of this.participants.getContributions()) {
             if (contribution.onWillStart) {
                 await contribution.onWillStart(context);
@@ -131,8 +135,12 @@ export class PluginDeployerImpl implements PluginDeployer {
             type: PluginType.System
         }));
         const resolvePlugins = this.measure('resolvePlugins');
+
+        //=====================步骤2: 根据plugin部署位置解析到具体的plugin信息================
         const plugins = await this.resolvePlugins([...unresolvedUserEntries, ...unresolvedSystemEntries]);
         resolvePlugins.log('Resolve plugins list');
+
+        //====================步骤3: 根据具体的plugin信息部署plugin==========================
         await this.deployPlugins(plugins);
         deployPlugins.log('Deploy plugins list');
     }
@@ -225,6 +233,7 @@ export class PluginDeployerImpl implements PluginDeployer {
     }
 
     protected async resolveAndHandle(id: string, type: PluginType, options?: PluginDeployOptions): Promise<PluginDeployerEntry[]> {
+        //=====步骤1: 拿到plugin entries，每个entry能拿到具体plugin目录绝对路径，并尝试确定plugin具体类型
         let entries = await this.resolvePlugin(id, type, options);
         if (type === PluginType.User) {
             await this.applyFileHandlers(entries);
@@ -280,6 +289,7 @@ export class PluginDeployerImpl implements PluginDeployer {
      * deploy all plugins that have been accepted
      */
     async deployPlugins(pluginsToDeploy: PluginDeployerEntry[]): Promise<number> {
+        // =============步骤3-1: 确认各个插件的类型（frontend插件、backend插件还是headless插件），将同种类型的插件归并到一个集合===========
         const acceptedPlugins = pluginsToDeploy.filter(pluginDeployerEntry => pluginDeployerEntry.isAccepted());
         const acceptedFrontendPlugins = pluginsToDeploy.filter(pluginDeployerEntry => pluginDeployerEntry.isAccepted(PluginDeployerEntryType.FRONTEND));
         const acceptedBackendPlugins = pluginsToDeploy.filter(pluginDeployerEntry => pluginDeployerEntry.isAccepted(PluginDeployerEntryType.BACKEND));
@@ -298,6 +308,7 @@ export class PluginDeployerImpl implements PluginDeployer {
         const pluginPaths = [...acceptedBackendPlugins, ...acceptedHeadlessPlugins].map(pluginEntry => pluginEntry.path());
         this.logger.debug('local path to deploy on remote instance', pluginPaths);
 
+        // =======================步骤3-2: 调用各个类型的插件部署处理器部署各类型插件===============
         const deployments = [];
         // start the backend plugins
         deployments.push(await this.pluginDeployerHandler.deployBackendPlugins(acceptedBackendPlugins));
@@ -312,7 +323,8 @@ export class PluginDeployerImpl implements PluginDeployer {
      * If there are some single files, try to see if we can work on these files (like unpacking it, etc)
      */
     public async applyFileHandlers(pluginDeployerEntries: PluginDeployerEntry[]): Promise<void> {
-        const waitPromises = pluginDeployerEntries.filter(pluginDeployerEntry => pluginDeployerEntry.isResolved()).flatMap(pluginDeployerEntry =>
+        const waitPromises = pluginDeployerEntries.filter(
+            pluginDeployerEntry => pluginDeployerEntry.isResolved()).flatMap(pluginDeployerEntry =>
             this.pluginDeployerFileHandlers.map(async pluginFileHandler => {
                 const proxyPluginDeployerEntry = new ProxyPluginDeployerEntry(pluginFileHandler, (pluginDeployerEntry) as PluginDeployerEntryImpl);
                 if (await pluginFileHandler.accept(proxyPluginDeployerEntry)) {
@@ -355,6 +367,8 @@ export class PluginDeployerImpl implements PluginDeployer {
             await foundPluginResolver.resolve(context, options);
 
             context.getPlugins().forEach(entry => {
+                // type 0 system
+                // type 1 user
                 entry.type = type;
                 pluginDeployerEntries.push(entry);
             });

@@ -263,22 +263,41 @@ export interface PluginManagerStartParams {
 }
 
 export interface AbstractPluginManagerExt<P extends Record<string, any>> {
-    /** initialize the manager, should be called only once */
+    /** 
+     * initialize the manager, should be called only once 
+     * 
+     * @link [Plugin Manager](../../plugin/plugin-manager.ts)
+     * */
     $init(params: P): Promise<void>;
 
-    /** load and activate plugins */
+    /** 
+     * load and activate plugins 
+     * 
+     * @link [Plugin Manager](../../plugin/plugin-manager.ts)
+     */
     $start(params: PluginManagerStartParams): Promise<void>;
 
-    /** deactivate the plugin */
+    /** 
+     * deactivate the plugin 
+     * 
+     * @link [Plugin Manager](../../plugin/plugin-manager.ts)
+     * 
+     * */
     $stop(pluginId: string): Promise<void>;
 
-    /** deactivate all plugins */
+    /** 
+     * deactivate all plugins 
+     * 
+     * @link [Plugin Manager](../../plugin/plugin-manager.ts)
+     * 
+     * */
     $stop(): Promise<void>;
 
     $updateStoragePath(path: string | undefined): Promise<void>;
 
+    /** @link [Plugin Manager](../../plugin/plugin-manager.ts) */
     $activateByEvent(event: string): Promise<void>;
-
+    /** @link [Plugin Manager](../../plugin/plugin-manager.ts) */
     $activatePlugin(id: string): Promise<void>;
 }
 

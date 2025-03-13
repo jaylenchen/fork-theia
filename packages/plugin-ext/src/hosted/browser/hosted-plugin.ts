@@ -279,13 +279,19 @@ export class HostedPluginSupport extends AbstractHostedPluginSupport<PluginManag
         this.activateByWorkspaceContains(manager, plugin);
     }
 
+    /**
+     *  browser在obtain manager的逻辑里就通知了plugin manager
+     * - 准备好plugin api的具体实现加载到了plugin host进程中。代码`await manager.$init`
+     */
     protected async obtainManager(host: string, hostContributions: PluginContributions[], toDisconnect: DisposableCollection): Promise<PluginManagerExt | undefined> {
         let manager = this.managers.get(host);
         if (!manager) {
             const pluginId = getPluginId(hostContributions[0].plugin.metadata.model);
+            // 初始化RPC通讯信道
             const rpc = this.initRpc(host, pluginId);
             toDisconnect.push(rpc);
 
+            // 通过RPC执行获取plugin manager通信代理
             manager = rpc.getProxy(MAIN_RPC_CONTEXT.HOSTED_PLUGIN_MANAGER_EXT);
             this.managers.set(host, manager);
             toDisconnect.push(Disposable.create(() => this.managers.delete(host)));
@@ -350,7 +356,9 @@ export class HostedPluginSupport extends AbstractHostedPluginSupport<PluginManag
 
     protected initRpc(host: PluginHost, pluginId: string): RPCProtocol {
         const rpc = host === 'frontend' ? new PluginWorker().rpc : this.createServerRpc(host);
+        // 关联browser本地plugin api Main端，以便服务plugin api Ext端发送来的调用请求。
         setUpPluginApi(rpc, this.container);
+        // 内置Plugin API不够用，这里提供了第三方开发者自定义扩展Plugin API的Main-Ext。
         this.mainPluginApiProviders.getContributions().forEach(p => p.initialize(rpc, this.container));
         return rpc;
     }

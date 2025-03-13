@@ -138,6 +138,9 @@ export abstract class AbstractPluginHostRPC<PM extends AbstractPluginManagerExtI
         this.rpc.set(this.extRpc.$pluginManager, this.pluginManager);
     }
 
+    /**
+     * Plugin API Ext端的真正初始化延迟到了manager $init阶段。调用manager.$init就是调用plugin host rpc的init context
+     */
     initContext(contextPath: string, plugin: Plugin): void {
         const { name, version } = plugin.rawModel;
         console.debug(this.banner, 'initializing(' + name + '@' + version + ' with ' + contextPath + ')');
@@ -155,8 +158,11 @@ export abstract class AbstractPluginHostRPC<PM extends AbstractPluginManagerExtI
     }
 
     /**
+     * backend plugin的host位于@link [Plugin Host](../hosted/node/plugin-host-rpc.ts)
+     * 
      * Create the {@link PluginHost} that is required by my plugin manager ext interface to delegate
      * critical behaviour such as loading and initializing plugins to me.
+     *  
      */
     createPluginHost(): PluginHost {
         const { extensionTestsPath } = process.env;

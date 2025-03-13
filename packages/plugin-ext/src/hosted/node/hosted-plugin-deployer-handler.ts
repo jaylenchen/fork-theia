@@ -162,12 +162,13 @@ export class HostedPluginDeployerHandler implements PluginDeployerHandler {
         let id;
         let success = true;
         try {
+            // 通过plugin path读取pkg json对象
             const manifest = await this.reader.readPackage(pluginPath);
             if (!manifest) {
                 deployPlugin.error(`Failed to read ${entryPoint} plugin manifest from '${pluginPath}''`);
                 return success = false;
             }
-
+            // 通过pkg json对象
             const metadata = this.reader.readMetadata(manifest);
             metadata.isUnderDevelopment = entry.getValue('isUnderDevelopment') ?? false;
 

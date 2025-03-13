@@ -152,6 +152,7 @@ export abstract class AbstractHostedPluginSupport<PM extends AbstractPluginManag
 
         await this.beforeSyncPlugins(toDisconnect);
 
+        // ==============步骤1: 同步插件列表================
         // process empty plugins as well in order to properly remove stale plugin widgets
         await this.syncPlugins();
 
@@ -352,7 +353,7 @@ export abstract class AbstractHostedPluginSupport<PM extends AbstractPluginManag
             if (host === 'frontend' && environment.electron.is()) {
                 continue;
             }
-
+            // ====================步骤1: 通知plugin manager 初始化plugin api环境=============
             const manager = await this.obtainManager(host, hostContributions, toDisconnect);
             if (!manager) {
                 continue;
@@ -362,6 +363,8 @@ export abstract class AbstractHostedPluginSupport<PM extends AbstractPluginManag
             thenable.push((async () => {
                 try {
                     const activationEvents = [...this.activationEvents];
+                    
+                    // 此时才进行plugin api的初始化提供
                     await manager.$start({ plugins, configStorage, activationEvents });
                     if (toDisconnect.disposed) {
                         return;
@@ -399,6 +402,13 @@ export abstract class AbstractHostedPluginSupport<PM extends AbstractPluginManag
         }
     }
 
+    /**
+     * 
+     * 如果是b-s结构下，browser在obtain manager的逻辑里就通知了plugin manager
+     * - 准备好plugin api的具体实现加载到了plugin host进程中。代码`await manager.$init`
+     * 
+     * @link [Plugin Manager](../../plugin/plugin-manager.ts)
+     */
     protected abstract obtainManager(host: string, hostContributions: PluginContributions[],
         toDisconnect: DisposableCollection): Promise<PM | undefined>;
 

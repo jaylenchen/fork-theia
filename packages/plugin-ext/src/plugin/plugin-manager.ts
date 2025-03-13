@@ -48,6 +48,9 @@ import { InternalSecretsExt, SecretStorageExt } from '../plugin/secrets-ext';
 import { PluginExt } from './plugin-context';
 import { Deferred } from '@theia/core/lib/common/promise-util';
 
+/**
+ * backend plugin的host位于@link [Plugin Host](../hosted/node/plugin-host-rpc.ts)
+ */
 export interface PluginHost {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -204,8 +207,14 @@ export abstract class AbstractPluginManagerExtImpl<P extends Record<string, any>
     }
 
     async $start(params: PluginManagerStartParams): Promise<void> {
+        // ===========步骤1: 注册plugin，监听相关activate events===================
+        /**
+         * 具体的做法：
+         * 主要逻辑是对插件的activateEvents进行事件注册，监听到该事件时，插件才启动执行。
+         */
         this.configStorage = params.configStorage;
 
+        // api factory获取到plugin api运行时
         const [plugins, foreignPlugins] = await this.host.init(params.plugins);
         // add foreign plugins
         for (const plugin of foreignPlugins) {
@@ -218,6 +227,11 @@ export abstract class AbstractPluginManagerExtImpl<P extends Record<string, any>
 
         // ensure plugins are registered before running activation events
         this.ready.resolve();
+        // =========步骤2: 派发相关event，让监听对应event的plugin激活执行==================
+        /**
+         * 具体的做法：
+         * 派发相关事件，让监听到对应事件的插件执行起来。
+         */
         // run eager plugins
         await this.$activateByEvent('*');
         for (const activationEvent of params.activationEvents) {

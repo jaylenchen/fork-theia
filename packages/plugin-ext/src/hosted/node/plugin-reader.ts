@@ -94,7 +94,11 @@ export class HostedPluginReader implements BackendApplicationContribution {
         if (!pluginPath) {
             return undefined;
         }
+        // "pluginPath = /Users/work/.theia/deployedPlugins/sample-namespace.plugin-a-1.53.0/extension"
+        // 这里是因为pluginPath本身就是绝对路径，也有可能plugin path的路径是一个软连接，那么通过realpath函数能够获取到绝对路径
         const resolvedPluginPath = await realpath(pluginPath);
+
+        // 拿到package json对象除去deps相关的其他大部份内容
         const manifest = await loadManifest(resolvedPluginPath);
         if (!manifest) {
             return undefined;

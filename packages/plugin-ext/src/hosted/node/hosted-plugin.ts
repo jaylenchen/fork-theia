@@ -86,6 +86,7 @@ export class HostedPluginSupport {
     }
 
     runPluginServer(serverName?: string): void {
+        console.log(new Error().stack)
         if (!this.isPluginProcessRunning) {
             this.hostedPluginProcess.runPluginServer(serverName);
             this.isPluginProcessRunning = true;

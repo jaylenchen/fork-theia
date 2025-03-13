@@ -110,12 +110,22 @@ export class HostedPluginServerImpl implements HostedPluginServer {
         this.hostedPlugin.setClient(client);
     }
 
+    /**
+     * 经典场景：当client启动时，尝试启动插件系统
+     * 插件系统会sync plugins，此时尝试发送rpc请求，获取已部署的plugin-id集合。
+     * plugin有三个种类：纯前端(frontend-plugin)、前端+后端配合（backend-plugin）、纯后端(headless-plugin)。
+     * 我们尝试获取到backend-plugin，如果至少有一个的话，那么我们在这个阶段启动plugin server，开启一个plugin进程。
+     */
     async getDeployedPluginIds(): Promise<PluginIdentifiers.VersionedId[]> {
+        // ===========步骤1: 获取已经部署的plugins============
         const backendPlugins = (await this.deployerHandler.getDeployedBackendPlugins())
             .filter(this.backendPluginHostableFilter);
+        // ===========步骤2: 确定有plugin的话准备plugin运行环境- plugin host进程=============
         if (backendPlugins.length > 0) {
             this.hostedPlugin.runPluginServer(this.getServerName());
         }
+
+        // ===========步骤3: 
         const plugins = new Set<PluginIdentifiers.VersionedId>();
         const addIds = async (identifiers: PluginIdentifiers.VersionedId[]): Promise<void> => {
             for (const pluginId of identifiers) {

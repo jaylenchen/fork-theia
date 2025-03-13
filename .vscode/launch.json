@@ -5,6 +5,20 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Debug-Browser-Example",
+      "request": "launch",
+      "runtimeArgs": [
+        "workspace",
+        "@theia/example-browser",
+        "start:watch"
+      ],
+      "runtimeExecutable": "yarn",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "node"
+    },
+    {
       "type": "node",
       "request": "attach",
       "name": "Attach by Process ID",
